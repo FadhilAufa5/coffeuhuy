@@ -5,7 +5,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, ShoppingCart,Map } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, ShoppingCart,Map, Gift, MapPin } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -20,23 +20,28 @@ const mainNavItems: NavItem[] = [
         icon: ShoppingCart,
     },
     {
-        title: 'Orders',
-        href: dashboard(),
-        icon: Map,
+        title: 'Events',
+        href: '/events/index',
+        icon: Gift,
+    },
+    {
+        title: 'Outlets',
+        href: '/locations/index',
+        icon: MapPin,
     },
 ];
 
 const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
+//     {
+//         title: 'Repository',
+//         href: 'https://github.com/laravel/react-starter-kit',
+//         icon: Folder,
+//     },
+//     {
+//         title: 'Documentation',
+//         href: 'https://laravel.com/docs/starter-kits#react',
+//         icon: BookOpen,
+//     },
 ];
 
 export function AppSidebar() {
