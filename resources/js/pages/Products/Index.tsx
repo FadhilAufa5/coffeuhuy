@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ProductTable, { Product } from '@/components/ProductTable';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
 
-export default function ProductIndex({ products, flash }: { products: Product[], flash?: { success?: string } }) {
+export default function CreateProduct({ products, flash }: { products: Product[], flash?: { success?: string } }) {
   const [deleteProduct, setDeleteProduct] = useState<Product | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -26,6 +26,7 @@ export default function ProductIndex({ products, flash }: { products: Product[],
     image: null as File | null,
   });
 
+  // Flash message
   if (flash?.success && !toastMessage) {
     setToastMessage(flash.success);
     setTimeout(() => setToastMessage(''), 3000);
@@ -74,15 +75,18 @@ export default function ProductIndex({ products, flash }: { products: Product[],
 
   return (
     <AppLayout>
-      <Head title="Products" />
-      <div className="p-6 space-y-6">
+      <Head title="Create Product" />
+      <div className="p-6 space-y-6 max-w-6xl mx-auto">
+
+        {/* Header */}
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Add Products</h1>
-          <Button onClick={() => setShowCreateModal(true)} className="flex items-center gap-2 bg-black hover:bg-gray-500 text-white">
-            <Plus className="h-5 w-5" /> Add New Product
+          <h1 className="text-3xl font-bold">Tambah Produk Baru</h1>
+          <Button onClick={() => setShowCreateModal(true)} className="flex items-center gap-2 bg-black text-white hover:bg-gray-700">
+            <Plus className="h-5 w-5" /> Tambah Produk
           </Button>
         </div>
 
+        {/* Product Table */}
         <Card className="p-4 shadow-lg">
           <ProductTable
             products={products}
@@ -103,29 +107,29 @@ export default function ProductIndex({ products, flash }: { products: Product[],
                 <button onClick={() => setShowCreateModal(false)} className="absolute top-2 right-2">
                   <X className="h-5 w-5" />
                 </button>
-                <h2 className="text-2xl font-bold mb-4">Add Product</h2>
+                <h2 className="text-2xl font-bold mb-4">Tambah Produk</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <Label htmlFor="name">Name</Label>
+                    <Label htmlFor="name">Nama Produk</Label>
                     <Input id="name" name="name" value={data.name} onChange={handleChange} required />
                   </div>
                   <div>
-                    <Label htmlFor="description">Description</Label>
+                    <Label htmlFor="description">Deskripsi</Label>
                     <Input id="description" name="description" value={data.description} onChange={handleChange} />
                   </div>
                   <div>
-                    <Label htmlFor="type">Type</Label>
+                    <Label htmlFor="type">Jenis</Label>
                     <select name="type" value={data.type} onChange={handleChange} className="w-full border rounded p-2">
                       <option value="">-- Pilih Jenis --</option>
                       {['Coffee','Non-Coffee','Snack','Pastry','Heavy Meal'].map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </div>
                   <div>
-                    <Label htmlFor="price">Price</Label>
+                    <Label htmlFor="price">Harga</Label>
                     <Input id="price" name="price" type="number" value={data.price} onChange={handleChange} required />
                   </div>
                   <div>
-                    <Label htmlFor="image">Image</Label>
+                    <Label htmlFor="image">Gambar Produk</Label>
                     <Input id="image" name="image" type="file" accept="image/*" onChange={handleImageChange} />
                     {preview && <img src={preview} className="h-32 w-32 mt-2 object-cover rounded" />}
                   </div>
@@ -136,7 +140,7 @@ export default function ProductIndex({ products, flash }: { products: Product[],
           )}
         </AnimatePresence>
 
-        {/* Modal Detail */}
+        {/* Modal Detail Produk */}
         <AnimatePresence>
           {selectedProduct && (
             <motion.div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
@@ -156,7 +160,7 @@ export default function ProductIndex({ products, flash }: { products: Product[],
           )}
         </AnimatePresence>
 
-        {/* Confirm Delete Modal */}
+        {/* Confirm Delete */}
         <ConfirmDeleteModal
           isOpen={!!deleteProduct}
           onClose={() => setDeleteProduct(null)}
@@ -173,6 +177,7 @@ export default function ProductIndex({ products, flash }: { products: Product[],
             </motion.div>
           )}
         </AnimatePresence>
+
       </div>
     </AppLayout>
   );

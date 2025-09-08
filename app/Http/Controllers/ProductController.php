@@ -15,6 +15,7 @@ class ProductController extends Controller
         $products = Product::latest()->get();
         return Inertia::render('Products/Index', [
             'products' => $products,
+            
         ]);
     }
 
@@ -49,4 +50,6 @@ class ProductController extends Controller
 
         return redirect()->back()->with('success', 'Produk berhasil dihapus!');
     }
+
+    
 }
