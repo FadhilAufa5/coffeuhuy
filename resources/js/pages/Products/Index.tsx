@@ -72,6 +72,13 @@ export default function CreateProduct({ products, flash }: { products: Product[]
     });
     setDeleteProduct(null);
   };
+    const typeColors: Record<string, string> = {
+  Coffee: "bg-brown-500 text-white",
+  "Non-Coffee": "bg-blue-500 text-white",
+  Snack: "bg-green-500 text-white",
+  Pastry: "bg-pink-500 text-white",
+  "Heavy Meal": "bg-orange-500 text-white",
+};
 
   return (
     <AppLayout>

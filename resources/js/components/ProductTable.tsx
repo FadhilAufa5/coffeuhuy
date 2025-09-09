@@ -1,50 +1,5 @@
-import React, { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Trash2, Eye } from 'lucide-react';
 
-
-const getTypeColor = (type: string) => {
-  switch(type) {
-    case 'Coffee': return 'bg-yellow-700/20 text-yellow-800';
-    case 'Non-Coffee': return 'bg-blue-200 text-blue-800';
-    case 'Snack': return 'bg-green-200 text-green-800';
-    case 'Pastry': return 'bg-pink-200 text-pink-800';
-    case 'Heavy Meal': return 'bg-red-200 text-red-800';
-    default: return 'bg-gray-200 text-gray-800';
-  }
-};
-// ======== Table Components ========
-const cn = (...classes: (string | undefined | false)[]) => classes.filter(Boolean).join(' ');
-
-const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>((props, ref) => (
-  <div className="overflow-x-auto w-full">
-    <table ref={ref} className={cn('w-full caption-bottom text-sm border-collapse', props.className)} {...props} />
-  </div>
-));
-Table.displayName = 'Table';
-
-const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>((props, ref) => <thead ref={ref} {...props} />);
-TableHeader.displayName = 'TableHeader';
-
-const TableBody = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>((props, ref) => <tbody ref={ref} {...props} />);
-TableBody.displayName = 'TableBody';
-
-const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTMLTableRowElement>>((props, ref) => (
-  <tr ref={ref} className={cn('border-b transition-colors hover:bg-gray-50', props.className)} {...props} />
-));
-TableRow.displayName = 'TableRow';
-
-const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<HTMLTableCellElement>>((props, ref) => (
-  <th ref={ref} className={cn('h-12 px-4 text-left align-middle font-medium text-gray-700', props.className)} {...props} />
-));
-TableHead.displayName = 'TableHead';
-
-const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<HTMLTableCellElement>>((props, ref) => (
-  <td ref={ref} className={cn('p-4 align-middle', props.className)} {...props} />
-));
-TableCell.displayName = 'TableCell';
-
-// ======== Product Table Component ========
 export interface Product {
   id: number;
   name: string;
@@ -54,92 +9,146 @@ export interface Product {
   image?: string;
 }
 
-interface Props {
+// warna label per jenis
+const typeColors: Record<string, string> = {
+  Coffee: "bg-yellow-700 text-white",
+  "Non-Coffee": "bg-blue-500 text-white",
+  Snack: "bg-green-500 text-white",
+  Pastry: "bg-pink-500 text-white",
+  "Heavy Meal": "bg-orange-500 text-white",
+};
+
+export default function ProductTable({
+  products,
+  onView,
+  onDelete,
+  filterType,
+  setFilterType,
+}: {
   products: Product[];
-  onView: (product: Product) => void;
-  onDelete: (product: Product) => void; 
+  onView: (p: Product) => void;
+  onDelete: (p: Product) => void;
   filterType: string;
-  setFilterType: (type: string) => void;
-}
-
-export default function ProductTable({ products, onView, onDelete, filterType, setFilterType }: Props) {
-  const types = ['All', 'Coffee', 'Non-Coffee', 'Snack', 'Pastry', 'Heavy Meal'];
-
-  const filteredProducts = useMemo(() => {
-    if (filterType === 'All') return products;
-    return products.filter(p => p.type === filterType);
-  }, [filterType, products]);
+  setFilterType: (t: string) => void;
+}) {
+  const filteredProducts =
+    filterType === 'All'
+      ? products
+      : products.filter((p) => p.type === filterType);
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-lg font-bold">Products</h2>
+      {/* Filter */}
+      <div className="flex justify-end">
         <select
           value={filterType}
-          onChange={e => setFilterType(e.target.value)}
+          onChange={(e) => setFilterType(e.target.value)}
           className="border rounded p-2"
         >
-          {types.map(type => (
-            <option key={type} value={type}>{type}</option>
-          ))}
+          <option value="All">Semua</option>
+          {['Coffee', 'Non-Coffee', 'Snack', 'Pastry', 'Heavy Meal'].map(
+            (t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            )
+          )}
         </select>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Foto</TableHead>
-            <TableHead>Nama</TableHead>
-            <TableHead>Jenis</TableHead>
-            <TableHead>Harga</TableHead>
-            <TableHead>Aksi</TableHead>
-          </TableRow>
-        </TableHeader>
-       <TableBody>
-  {filteredProducts.length ? filteredProducts.map(p => (
-    <TableRow key={p.id}>
-      <TableCell>
-        {p.image ? <img src={`/storage/${p.image}`} className="h-16 w-16 object-cover rounded" /> : '-'}
-      </TableCell>
-      <TableCell>{p.name}</TableCell>
-      <TableCell>
-        <span className={`px-2 py-1 rounded-full text-sm font-medium ${getTypeColor(p.type)}`}>
-          {p.type}
-        </span>
-      </TableCell>
-      <TableCell>Rp {p.price.toLocaleString()}</TableCell>
-     <TableCell>
-  <div className="flex items-center justify-start gap-2">
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={() => onView(p)}
-      className="text-blue-600 hover:text-blue-800 p-1 flex items-center justify-center"
-    >
-      <Eye className="h-5 w-5" />
-    </Button>
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={() => onDelete(p)}
-      className="text-red-600 hover:text-red-800 p-1 flex items-center justify-center"
-    >
-      <Trash2 className="h-5 w-5" />
-    </Button>
-  </div>
-</TableCell>
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full table-auto text-sm text-left border border-gray-200 dark:border-gray-700 rounded-lg">
+          <thead className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+            <tr>
+              <th className="px-4 py-3 w-20 text-center">Foto</th>
+              <th className="px-4 py-3 min-w-[150px]">Nama</th>
+              <th className="px-4 py-3 min-w-[120px]">Jenis</th>
+              <th className="px-4 py-3 min-w-[120px]">Harga</th>
+              <th className="px-4 py-3 min-w-[250px]">Deskripsi</th>
+              <th className="px-4 py-3 text-center min-w-[160px]">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((p) => (
+                <tr
+                  key={p.id}
+                  className="border-t hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+                >
+                  {/* Foto */}
+                  <td className="px-4 py-3 text-center">
+                    {p.image ? (
+                      <img
+                        src={`/storage/${p.image}`}
+                        alt={p.name}
+                        className="h-12 w-12 object-cover rounded-md border mx-auto"
+                      />
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </td>
 
-    </TableRow>
-  )) : (
-    <TableRow>
-      <TableCell colSpan={5} className="text-center text-gray-500 p-4">
-        Belum ada produk
-      </TableCell>
-    </TableRow>
-  )}
-</TableBody>
+                  {/* Nama */}
+                  <td className="px-4 py-3 font-medium">{p.name}</td>
 
-      </Table>
+                  {/* Jenis dengan badge warna */}
+                  <td className="px-4 py-3">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        typeColors[p.type] || "bg-gray-300 text-gray-700"
+                      }`}
+                    >
+                      {p.type}
+                    </span>
+                  </td>
+
+                  {/* Harga */}
+                  <td className="px-4 py-3">
+                    Rp {p.price.toLocaleString()}
+                  </td>
+
+                  {/* Deskripsi */}
+                  <td className="px-4 py-3 max-w-xs truncate">
+                    {p.description}
+                  </td>
+
+                  {/* Aksi */}
+                  <td className="px-4 py-3">
+                    <div className="flex justify-center space-x-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onView(p)}
+                        className="px-3"
+                      >
+                        Lihat
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => onDelete(p)}
+                        className="px-3"
+                      >
+                        Hapus
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={6}
+                  className="px-4 py-6 text-center text-gray-500 italic"
+                >
+                  Belum ada produk ditambahkan
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
