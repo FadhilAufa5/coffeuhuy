@@ -26,7 +26,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Outlets',
-        href: '/locations/index',
+        href: '/outlets/index',
         icon: MapPin,
     },
 ];

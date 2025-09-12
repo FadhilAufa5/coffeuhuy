@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\OutletController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -23,8 +24,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('events', [EventController::class, 'store'])->name('events.store');
     Route::delete('events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
 
-    // Locations
-    Route::get('locations/index', [\App\Http\Controllers\LocationsController::class, 'index'])->name('locations.index');
+    // Outlet
+    Route::get('/outlets', [OutletController::class, 'index'])->name('outlets.index');
+    Route::post('/outlets', [OutletController::class, 'store'])->name('outlets.store');
+    Route::delete('/outlets/{outlet}', [OutletController::class, 'destroy'])->name('outlets.destroy');
 });
 
 require __DIR__.'/settings.php';
