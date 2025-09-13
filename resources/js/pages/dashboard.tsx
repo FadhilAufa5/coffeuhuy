@@ -119,31 +119,45 @@ export default function Dashboard() {
             <Chart options={chartOptions} series={chartSeries} type="bar" height={300} />
           </Card>
 
-          {/* Upcoming Events */}
-          <Card className="p-6 shadow-lg bg-white dark:bg-gray-900">
-            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Upcoming Events</h2>
-            <ul className="space-y-3">
-              {stats.upcomingEvents.length > 0 ? (
-                stats.upcomingEvents.map((event: any, idx: number) => (
-                  <li
-                    key={idx}
-                    className="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-                  >
-                    <span className="font-medium text-gray-800 dark:text-gray-200">{event.title}</span>
-                   <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {new Date(event.date).toLocaleDateString("id-ID", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </span>
-                  </li>
-                ))
-              ) : (
-                <p className="text-gray-500 dark:text-gray-400 text-sm">No upcoming events</p>
-              )}
-            </ul>
-          </Card>
+        {/* Upcoming Events */}
+        <Card className="p-6 shadow-lg bg-gradient-to-br from-indigo-50 to-white dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl">
+          <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white flex items-center gap-2">
+            <Calendar className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+            Upcoming Events
+          </h2>
+          <ul className="space-y-4">
+            {stats.upcomingEvents.length > 0 ? (
+              stats.upcomingEvents.map((event: any, idx: number) => (
+                <li
+                  key={idx}
+                  className="flex items-center justify-between gap-4 p-4 rounded-xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-500 transition-all duration-200"
+                >
+                
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900">
+                      <Calendar className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <span className="font-semibold text-gray-800 dark:text-gray-200">{event.title}</span>
+                  </div>
+
+              
+                  <span className="text-sm font-medium px-3 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-800 text-indigo-700 dark:text-indigo-300">
+                    {new Date(event.date).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </span>
+                </li>
+              ))
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-4">
+                No upcoming events 🎉
+              </p>
+            )}
+          </ul>
+        </Card>
+
         </div>
       </div>
     </AppLayout>
