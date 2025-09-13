@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-w
+
 class Outlet extends Model
 {
     protected $fillable = ['name', 'address', 'city', 'phone', 'image'];

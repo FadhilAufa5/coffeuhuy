@@ -21,12 +21,12 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Events',
-        href: '/events/index',
+        href: '/events',
         icon: Gift,
     },
     {
         title: 'Outlets',
-        href: '/outlets/index',
+        href: '/outlets',
         icon: MapPin,
     },
 ];

@@ -22,12 +22,22 @@ export interface NavItem {
     isActive?: boolean;
 }
 
+export interface Stats {
+  totalProducts: number;
+  totalEvents: number;
+  totalOutlets: number;
+  totalRevenue: number;
+  lowStockProducts: string[];
+  upcomingEvents: { title: string; date: string }[];
+}
+
 export interface SharedData {
-    name: string;
-    quote: { message: string; author: string };
-    auth: Auth;
-    sidebarOpen: boolean;
-    [key: string]: unknown;
+  name: string;
+  quote: { message: string; author: string };
+  auth: Auth;
+  sidebarOpen: boolean;
+  stats?: Stats; // <-- tambahin ini
+  [key: string]: unknown;
 }
 
 export interface User {
@@ -38,5 +48,5 @@ export interface User {
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
-    [key: string]: unknown; // This allows for additional properties...
+    [key: string]: unknown;
 }

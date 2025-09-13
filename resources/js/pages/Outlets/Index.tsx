@@ -5,10 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { X, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
-
 
 interface Outlet {
   id: number;
@@ -40,11 +39,14 @@ export default function CreateOutlet({
     image: null as File | null,
   });
 
-  // flash success dari backend
-  if (flash?.success && !toastMessage) {
-    setToastMessage(flash.success);
-    setTimeout(() => setToastMessage(''), 3000);
-  }
+  // Flash success dari backend → ditampilkan sebagai toast
+  useEffect(() => {
+    if (flash?.success) {
+      setToastMessage(flash.success);
+      const timer = setTimeout(() => setToastMessage(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [flash?.success]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -59,14 +61,14 @@ export default function CreateOutlet({
     }
   };
 
- const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     post('/outlets', {
       onSuccess: () => {
         reset();
         setPreview('');
         setShowCreateModal(false);
-        setToastMessage('Event berhasil ditambahkan!');
+        setToastMessage('Outlet berhasil ditambahkan!');
         setTimeout(() => setToastMessage(''), 3000);
       },
     });
@@ -79,7 +81,6 @@ export default function CreateOutlet({
         setToastMessage(`Outlet "${deleteOutlet.name}" berhasil dihapus!`);
         setTimeout(() => setToastMessage(''), 3000);
       },
-       method: 'delete',
     });
     setDeleteOutlet(null);
   };
@@ -181,6 +182,7 @@ export default function CreateOutlet({
                 exit={{ scale: 0.8 }}
               >
                 <button
+                  type="button"
                   onClick={() => setShowCreateModal(false)}
                   className="absolute top-2 right-2"
                 >
@@ -275,17 +277,22 @@ export default function CreateOutlet({
                 exit={{ scale: 0.8 }}
               >
                 <button
+                  type="button"
                   onClick={() => setSelectedOutlet(null)}
                   className="absolute top-2 right-2"
                 >
                   <X className="h-5 w-5" />
                 </button>
-                {selectedOutlet.image && (
+                {selectedOutlet.image ? (
                   <img
                     src={`/storage/${selectedOutlet.image}`}
                     alt={selectedOutlet.name}
                     className="w-full h-40 object-cover rounded mb-4"
                   />
+                ) : (
+                  <div className="w-full h-40 flex items-center justify-center bg-gray-100 rounded mb-4 text-gray-400">
+                    Tidak ada foto
+                  </div>
                 )}
                 <h3 className="text-xl font-bold">{selectedOutlet.name}</h3>
                 <p className="text-gray-500">{selectedOutlet.address}</p>
