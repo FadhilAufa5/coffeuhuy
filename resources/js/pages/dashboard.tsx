@@ -84,11 +84,11 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-6">
           {[
-            { icon: Coffee, label: 'Products', value: stats.totalProducts, color: 'bg-indigo-500' },
-            { icon: Calendar, label: 'Events', value: stats.totalEvents, color: 'bg-pink-500' },
-            { icon: MapPin, label: 'Outlets', value: stats.totalOutlets, color: 'bg-emerald-500' },
+            { icon: Coffee, label: ' Total Products', value: stats.totalProducts, color: 'bg-indigo-500' },
+            { icon: Calendar, label: 'Total Events', value: stats.totalEvents, color: 'bg-pink-500' },
+            { icon: MapPin, label: 'Total Outlets', value: stats.totalOutlets, color: 'bg-emerald-500' },
             {
               icon: DollarSign,
               label: 'Revenue',

@@ -15,7 +15,7 @@ interface Props {
   products: Product[];
 }
 
-export default function Welcome({ products }: Props) {
+export default function welcome({ products }: { products: Product[] }) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   return (

@@ -24,11 +24,13 @@ class OutletController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'name'       => 'required|string|max:255',
+            'address'    => 'required|string|max:255',
+            'city'       => 'required|string|max:255',
+            'phone'      => 'required|string|max:20',
+            'image'      => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'open_time'  => 'nullable|date_format:H:i',  // validasi jam buka
+            'close_time' => 'nullable|date_format:H:i',  // validasi jam tutup
         ]);
 
         if ($request->hasFile('image')) {
@@ -40,7 +42,7 @@ class OutletController extends Controller
         return redirect()->back()->with('success', 'Outlet berhasil ditambahkan!');
     }
 
-   public function destroy(Outlet $outlet)
+    public function destroy(Outlet $outlet)
     {
         if ($outlet->image) {
             Storage::disk('public')->delete($outlet->image);
@@ -50,6 +52,4 @@ class OutletController extends Controller
 
         return redirect()->back()->with('success', 'Outlet berhasil dihapus!');
     }
-
-
 }

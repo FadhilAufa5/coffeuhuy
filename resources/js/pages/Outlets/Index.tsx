@@ -31,13 +31,16 @@ export default function CreateOutlet({
   const [selectedOutlet, setSelectedOutlet] = useState<Outlet | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const { data, setData, post, delete: destroy, reset, processing } = useForm({
-    name: '',
-    address: '',
-    city: '',
-    phone: '',
-    image: null as File | null,
-  });
+ const { data, setData, post, delete: destroy, reset, processing } = useForm({
+  name: '',
+  address: '',
+  city: '',
+  phone: '',
+  image: null as File | null,
+  open_time: '',   
+  close_time: '',  
+});
+
 
   // Flash success dari backend → ditampilkan sebagai toast
   useEffect(() => {
