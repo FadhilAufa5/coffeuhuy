@@ -50,3 +50,11 @@ export interface User {
     updated_at: string;
     [key: string]: unknown;
 }
+
+export interface NavItem {
+  title: string;
+  href?: string;
+  icon?: LucideIcon;
+  
+  items?: NavItem[];
+}
