@@ -23,8 +23,16 @@ interface MasonryItem {
   height: number;
 }
 
+interface Event {
+  id: number;
+  name: string;
+  date: string;
+  description: string;
+  image: string;
+}
 
-export default function Welcome({ products }: { products: Product[] }) {
+
+export default function Welcome({ auth, products, events }: { auth: any; products: Product[]; events: Event[] }) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   return (
@@ -49,7 +57,7 @@ export default function Welcome({ products }: { products: Product[] }) {
         </section>
 
         <Outlets />
-        <EventPage />
+       <EventPage events={events} />
 
        <section>
       <h2 className="text-3xl font-bold mb-4 text-center">Gallery Uhuy</h2>

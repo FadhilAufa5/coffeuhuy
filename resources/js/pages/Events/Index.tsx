@@ -18,6 +18,14 @@ interface Event {
   is_new?: boolean;
 }
 
+function formatDate(dateString: string) {
+  return new Date(dateString).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
 export default function CreateEvent({ events, flash }: { events: Event[]; flash?: { success?: string } }) {
   const [deleteEvent, setDeleteEvent] = useState<Event | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -196,7 +204,7 @@ export default function CreateEvent({ events, flash }: { events: Event[]; flash?
                   </div>
                   <div>
                     <Label htmlFor="date">Tanggal</Label>
-                    <Input id="date" name="date" type="date" value={data.date} onChange={handleChange} required />
+                    <Input id="date" name="date" type="date" value={formatDate(data.date)} onChange={handleChange} required />
                   </div>
                   <div>
                     <Label htmlFor="description">Deskripsi</Label>
@@ -243,7 +251,7 @@ export default function CreateEvent({ events, flash }: { events: Event[]; flash?
                 )}
                 <h3 className="text-xl font-bold">{selectedEvent.name}</h3>
                 <p className="text-gray-500">{selectedEvent.description}</p>
-                <p className="text-sm mt-1">Tanggal: {selectedEvent.date}</p>
+                <p className="text-sm mt-1">Tanggal: {formatDate(selectedEvent.date)}</p>
               </motion.div>
             </motion.div>
           )}

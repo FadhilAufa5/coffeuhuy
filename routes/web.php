@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Product;
+use App\Models\Event;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\OutletController;
@@ -13,7 +14,8 @@ use Inertia\Inertia;
 // ========================
 Route::get('/', function () {
     return Inertia::render('welcome', [
-        'products' => Product::latest()->get(), // kirim produk ke halaman Welcome
+        'products' => Product::latest()->get(), 
+         'events' => Event::latest()->get(), 
     ]);
 })->name('home');
 
