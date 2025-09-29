@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import CurvedLoop from '@/components/CurvedLoop';
 import Masonry from '@/components/Masonry';
 import { X } from "lucide-react";
+import DomeGallery from '@/components/DomeGallery';
 
 // Definisikan tipe untuk item Masonry agar lebih jelas
 interface MasonryItem {
@@ -22,19 +23,9 @@ interface MasonryItem {
   height: number;
 }
 
-// 1. Nama komponen diubah menjadi "Welcome" (diawali huruf kapital)
+
 export default function Welcome({ products }: { products: Product[] }) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
-  // 2. Data untuk Masonry didefinisikan di dalam komponen, sebelum return
-  const masonryItems: MasonryItem[] = [
-    { id: "1", img: "https://images.unsplash.com/photo-1511920183353-32a5d5d57faf?q=80&w=800", url: "#", height: 400 },
-    { id: "2", img: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=800", url: "#", height: 250 },
-    { id: "3", img: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=800", url: "#", height: 600 },
-    { id: "4", img: "https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=800", url: "#", height: 450 },
-    { id: "5", img: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=800", url: "#", height: 300 },
-    { id: "6", img: "https://images.unsplash.com/photo-1495474472287-4d713b20e24b?q=80&w=800", url: "#", height: 550 },
-  ];
 
   return (
     <div className="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] dark:text-[#EDEDEC] font-sans antialiased">
@@ -59,7 +50,18 @@ export default function Welcome({ products }: { products: Product[] }) {
 
         <Outlets />
         <EventPage />
-        
+
+       <section>
+      <h2 className="text-3xl font-bold mb-4 text-center">Gallery Uhuy</h2>
+       <p className="text-center text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto">
+          Intip momen seru dan kehangatan di CoffeeShop Uhuy melalui galeri foto kami.
+       </p>
+      
+      <div className="w-full h-screen">
+        <DomeGallery />
+      </div>
+    </section>
+
         <Reviews />
       <Footer />
     

@@ -45,6 +45,7 @@
         "@tailwindcss/vite": "^4.1.11",
         "@types/react": "^19.0.3",
         "@types/react-dom": "^19.0.2",
+        "@use-gesture/react": "^10.3.1",
         "@vitejs/plugin-react": "^4.6.0",
         "apexcharts": "^5.3.4",
         "chart.js": "^4.5.0",

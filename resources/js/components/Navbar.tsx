@@ -28,18 +28,18 @@ export default function Navbar() {
           >
             <div className="relative overflow-hidden rounded-xl">
               <img
-                src="/logouhuy.png"
+                src="/logouhuy3.png"
                 alt="CoffeeShop Uhuy"
-                className="h-12 w-auto transition-transform duration-300 group-hover:scale-105"
+                className="h-22 w-auto transition-transform duration-300 group-hover:scale-105"
               />
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+              {/* <h1 className="text-xl font-bold text-gray-900 dark:text-white">
                 CoffeeShop Uhuy
               </h1>
               <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
                 Premium Coffee
-              </p>
+              </p> */}
             </div>
           </div>
 
