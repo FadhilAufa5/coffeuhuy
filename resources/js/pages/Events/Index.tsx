@@ -204,7 +204,7 @@ export default function CreateEvent({ events, flash }: { events: Event[]; flash?
                   </div>
                   <div>
                     <Label htmlFor="date">Tanggal</Label>
-                    <Input id="date" name="date" type="date" value={formatDate(data.date)} onChange={handleChange} required />
+                    <Input id="date" name="date" type="date" value={data.date} onChange={handleChange} required />
                   </div>
                   <div>
                     <Label htmlFor="description">Deskripsi</Label>

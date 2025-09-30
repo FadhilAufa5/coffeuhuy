@@ -14,6 +14,7 @@ import CurvedLoop from '@/components/CurvedLoop';
 import Masonry from '@/components/Masonry';
 import { X } from "lucide-react";
 import DomeGallery from '@/components/DomeGallery';
+import ScrollToTopButton from '@/components/ScrollTopButton';
 
 // Definisikan tipe untuk item Masonry agar lebih jelas
 interface MasonryItem {
@@ -59,21 +60,17 @@ export default function Welcome({ auth, products, events }: { auth: any; product
         <Outlets />
        <EventPage events={events} />
 
-       <section>
-      <h2 className="text-3xl font-bold mb-4 text-center">Gallery Uhuy</h2>
-       <p className="text-center text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto">
-          Intip momen seru dan kehangatan di CoffeeShop Uhuy melalui galeri foto kami.
-       </p>
-      
-      <div className="w-full h-screen">
-        <DomeGallery />
-      </div>
+<section className="px-4 py-12"> <h2 className="text-2xl md:text-3xl font-bold mb-4 text-center"> Gallery Uhuy </h2> 
+  <p className="text-center text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto text-sm md:text-base"> 
+    Intip momen seru dan kehangatan di CoffeeShop Uhuy melalui galeri foto kami. </p> 
+    <div className="w-full h-screen ">
+    <DomeGallery /> 
+    </div> 
     </section>
-
         <Reviews />
       <Footer />
     
-   
+   <ScrollToTopButton />
          
       </main>
        

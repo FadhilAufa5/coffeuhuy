@@ -6,6 +6,13 @@ import Chart from 'react-apexcharts';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 
+function formatDate(dateString: string) {
+  return new Date(dateString).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
 
 export default function Dashboard() {
   const { stats } = usePage().props as { stats: any };
