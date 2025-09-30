@@ -145,19 +145,19 @@ export default function Navbar() {
               </Link>
             ) : (
               <>
-                <Link
+                {/* <Link
                   href={login()}
                   onClick={() => setMenuOpen(false)}
                   className="block w-full text-center px-4 py-2.5 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
                 >
                   Log in
-                </Link>
+                </Link> */}
                 <Link
-                  href={register()}
+                  href={login()}
                   onClick={() => setMenuOpen(false)}
                   className="block w-full text-center px-4 py-3 text-base font-medium text-white bg-gradient-to-r from-gray-800 to-gray-600 rounded-lg hover:from-black hover:to-gray-700 transition-all duration-200 shadow-md"
                 >
-                  Register
+                  Login Mitra
                 </Link>
               </>
             )}
