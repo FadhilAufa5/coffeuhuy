@@ -28,7 +28,7 @@ export default function Outlets() {
   return (
     <section id="locations" className="py-16 px-6 bg-gray-50 dark:bg-[#080808]">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold mb-8 text-center">Our Outlets</h2>
+        <h2 className="text-3xl font-bold mb-8 text-center">Outlets CoffeeUhuy</h2>
 
         <div className="grid md:grid-cols-3 gap-6">
           {outlets.map((o) => (

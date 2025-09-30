@@ -91,8 +91,11 @@ export default function CreateProduct({
         {/* Header */}
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold dark:text-white">
-            Tambah Produk Baru
+            Tambah Produk Baru 
+            
           </h1>
+
+         
           <Button
             onClick={() => setShowCreateModal(true)}
             className="flex items-center gap-2 bg-black text-white hover:bg-gray-700 dark:bg-white dark:text-black dark:hover:bg-gray-200"

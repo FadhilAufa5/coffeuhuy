@@ -43,7 +43,7 @@ const Hero = () => {
       <div className="absolute top-0 left-0 right-0 bottom-0">
         <img
           className="object-cover w-full h-full"
-          src="https://cdn.rareblocks.xyz/collection/bakerstreet/images/hero/3/background.png"
+          src="/hero2.png"
           alt="Background Hero"
         />
       </div>

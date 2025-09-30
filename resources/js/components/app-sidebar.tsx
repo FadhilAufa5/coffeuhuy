@@ -14,8 +14,6 @@ import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import {
-  BookOpen,
-  Folder,
   LayoutGrid,
   ShoppingCart,
   Gift,
@@ -49,18 +47,7 @@ const menuNavItems: NavItem[] = [
   },
 ];
 
-const footerNavItems: NavItem[] = [
-  // {
-  //   title: 'Repository',
-  //   href: 'https://github.com/laravel/react-starter-kit',
-  //   icon: Folder,
-  // },
-  // {
-  //   title: 'Documentation',
-  //   href: 'https://laravel.com/docs/starter-kits#react',
-  //   icon: BookOpen,
-  // },
-];
+const footerNavItems: NavItem[] = [];
 
 export function AppSidebar() {
   return (
@@ -78,16 +65,11 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        {/* Dashboard menu */}
-        <NavMain items={dashboardNavItems} />
+        {/* Group: Platform */}
+        <NavMain items={dashboardNavItems} label="Platform" />
 
-        {/* Menus group */}
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton disabled>Menus</SidebarMenuButton>
-          </SidebarMenuItem>
-          <NavMain items={menuNavItems} />
-        </SidebarMenu>
+        {/* Group: Menus */}
+        <NavMain items={menuNavItems} label="Menus" />
       </SidebarContent>
 
       <SidebarFooter>
