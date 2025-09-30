@@ -91,7 +91,7 @@ export default function EventPage({ events }: { events: Event[] }) {
                   onClick={() => setSelectedEvent(event)}
                   className="mt-6 bg-red-500 hover:bg-red-700 text-white rounded-xl"
                 >
-                  Lihat Detail
+                  Lihat Selengkapnya
                 </Button>
               </div>
             </motion.div>

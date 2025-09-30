@@ -45,7 +45,7 @@ export default function Footer() {
           <ul className="space-y-3 text-gray-600 dark:text-gray-400">
             <li className="flex items-center md:justify-end gap-2">
               <MapPin size={16} className="text-red-500" />
-              Jl. Sudirman No. 45, Jakarta
+              Jl. Padjajaran No. 45, Bogor
             </li>
             <li className="flex items-center md:justify-end gap-2">
               <Mail size={16} className="text-red-500" />

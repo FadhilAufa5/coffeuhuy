@@ -38,7 +38,7 @@ export default function Welcome({ auth, products, events }: { auth: any; product
 
   return (
     <div className="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] dark:text-[#EDEDEC] font-sans antialiased">
-      <Head title="CoffeeShop Uhuy" />
+      <Head title="CoffeeUhuy" />
       <Navbar />
       <main>
         <Hero />
@@ -60,9 +60,9 @@ export default function Welcome({ auth, products, events }: { auth: any; product
         <Outlets />
        <EventPage events={events} />
 
-<section className="px-4 py-12"> <h2 className="text-2xl md:text-3xl font-bold mb-4 text-center"> Gallery Uhuy </h2> 
+<section className="px-4 py-12"> <h2 className="text-2xl md:text-3xl font-bold mb-4 text-center"> Gallery Sobat Uhuy </h2> 
   <p className="text-center text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto text-sm md:text-base"> 
-    Intip momen seru dan kehangatan di CoffeeShop Uhuy melalui galeri foto kami. </p> 
+    Intip momen seru dan kehangatan di Coffee Uhuy melalui galeri foto kami. </p> 
     <div className="w-full h-screen ">
     <DomeGallery /> 
     </div> 

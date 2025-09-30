@@ -62,7 +62,7 @@ const Hero = () => {
             </span>
           </p>
           <p className="mt-6 font-sans text-base font-normal leading-7 text-white text-opacity-70">
-            Setiap tegukan Coffee Uhuy, selalu ada cerita dan kehangatan untuk menemani hari Anda.
+            Setiap tegukan Kopi Uhuy, selalu ada cerita dan kehangatan untuk menemani hari Anda.
           </p>
           <p className="mt-6 font-sans text-lg font-normal text-white">
             Mulai dari Rp 15.000

@@ -44,23 +44,26 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Menu */}
-          <nav className="hidden md:flex items-center space-x-1">
-            {[
-              { label: "Home", id: "home" },
-              { label: "Menu", id: "menu" },
-              { label: "About", id: "about" },
-              { label: "Outlet", id: "locations" },
-            ].map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleScroll(item.id)}
-                className="relative px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-lg transition-all duration-200 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 group"
-              >
-                {item.label}
-                <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gray-700 dark:bg-gray-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-center"></span>
-              </button>
-            ))}
-          </nav>
+         <nav className="hidden md:flex items-center space-x-1">
+  {[
+    { label: "Home", id: "home" },
+    { label: "Menu", id: "menu" },
+    { label: "About", id: "about" },
+    { label: "Outlet", id: "locations" },
+  
+  ].map((item) => (
+    <button
+      key={item.id}
+      onClick={() => handleScroll(item.id)}
+      className="relative px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-lg transition-all duration-200 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 group"
+    >
+      {item.label}
+      <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gray-700 dark:bg-gray-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-center"></span>
+    </button>
+  ))}
+
+ 
+</nav>
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-3">

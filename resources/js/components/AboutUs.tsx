@@ -17,7 +17,7 @@ export default function AboutUs() {
           className="rounded-3xl overflow-hidden shadow-xl"
         >
           <img
-            src="https://images.unsplash.com/photo-1599898330165-6c3b93296d60?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjF8fGNvZmZlc2hvcHxlbnwwfHwwfHx8MA%3D%3D"
+            src="/CoffeeUhuyPlace.png"
             alt="Barista making coffee"
             className="w-full h-full object-cover"
           />
@@ -31,7 +31,7 @@ export default function AboutUs() {
           viewport={{ once: true, amount: 0.3 }}
           className="space-y-6"
         >
-          <h2 className="text-3xl font-bold">Tentang Coffeshop Uhuy</h2>
+          <h2 className="text-3xl font-bold">Tentang CoffeeUhuy</h2>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
             Lorem ipsum dolor, sit amet consectetur adipisicing elit. At nobis voluptatum ea
             maiores veniam. Blanditiis quis accusantium sit et harum. Lorem ipsum dolor sit,
