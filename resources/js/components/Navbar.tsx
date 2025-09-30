@@ -73,17 +73,17 @@ export default function Navbar() {
               </Link>
             ) : (
               <>
-                <Link
+                {/* <Link
                   href={login()}
                   className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors duration-200"
                 >
                   Log in
-                </Link>
+                </Link> */}
                 <Link
-                  href={register()}
+                  href={login()}
                   className="inline-flex items-center px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-gray-800 to-gray-600 rounded-lg shadow-md hover:from-black hover:to-gray-700 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
                 >
-                  Register
+                  Login Mitra
                 </Link>
               </>
             )}

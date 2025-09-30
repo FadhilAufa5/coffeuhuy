@@ -1,22 +1,41 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { Coffee, MapPin } from "lucide-react";
 
 const Hero = () => {
+  // Smooth scroll effect
+  useEffect(() => {
+    const links = document.querySelectorAll('a[href^="#"]');
+    links.forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute("href")?.substring(1);
+        const targetElement = document.getElementById(targetId || "");
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: "smooth" });
+        }
+      });
+    });
+  }, []);
+
   return (
-    <div className="relative h-screen bg-black overflow-hidden overflow-x-hidden">
+    <section
+      id="home"
+      className="relative h-screen bg-black overflow-hidden overflow-x-hidden"
+    >
       {/* Header */}
       <header className="absolute inset-x-0 top-0 z-10 py-6">
         <div className="px-6 mx-auto max-w-6xl">
           <div className="flex items-center justify-between">
             <div className="flex flex-shrink-0">
-              <a href="#" title="CoffeuHuy" className="inline-flex">
+              <a href="#home" title="CoffeuHuy" className="inline-flex">
                 {/* <img
                   className="w-auto h-16"
                   src="/logouhuy2.png"
-                  alt="BakerStreet"
+                  alt="CoffeeUhuy"
                 /> */}
               </a>
             </div>
-          </div>  
+          </div>
         </div>
       </header>
 
@@ -25,7 +44,7 @@ const Hero = () => {
         <img
           className="object-cover w-full h-full"
           src="https://cdn.rareblocks.xyz/collection/bakerstreet/images/hero/3/background.png"
-          alt=""
+          alt="Background Hero"
         />
       </div>
 
@@ -33,12 +52,10 @@ const Hero = () => {
       <div className="relative flex items-center justify-start h-full px-6 mx-auto max-w-6xl">
         <div className="w-full max-w-2xl">
           <h1 className="font-sans text-base font-normal tracking-tight text-white text-opacity-70">
-            ✦ CoffeShop Uhuy ✦
+            ✦ CoffeeShop Uhuy ✦
           </h1>
           <p className="mt-6 tracking-tighter text-white">
-            <span className="font-sans font-normal text-5xl">
-              Your daily cup of 
-            </span>
+            <span className="font-sans font-normal text-5xl">Your daily cup of</span>
             <br />
             <span className="font-serif italic font-normal text-6xl">
               Happiness
@@ -53,23 +70,26 @@ const Hero = () => {
 
           <div className="flex items-center mt-6 space-x-4">
             <a
-              href="#"
-              className="inline-flex items-center justify-center px-5 py-2 font-sans text-base font-semibold transition-all duration-200 rounded-full bg-white text-black hover:bg-opacity-90"
+              href="#menu"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2 font-sans text-base font-semibold transition-all duration-200 rounded-full bg-white text-black hover:bg-opacity-90"
             >
+              <Coffee className="h-5 w-5" />
               Menus
             </a>
 
             <a
-              href="#"
-              className="inline-flex items-center justify-center px-5 py-2 font-sans text-base font-semibold transition-all duration-200 border-2 rounded-full text-white border-white hover:bg-white hover:text-black"
+              href="#locations"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2 font-sans text-base font-semibold transition-all duration-200 border-2 rounded-full text-white border-white hover:bg-white hover:text-black"
             >
+              <MapPin className="h-5 w-5" />
               Outlets
             </a>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
 export default Hero;
+

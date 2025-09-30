@@ -19,9 +19,13 @@ interface LoginProps {
 export default function Login({ status, canResetPassword }: LoginProps) {
     return (
         <AuthLayout title="Log in to your account" description="Enter your email and password below to log in">
-            <Head title="Log in" />
+            <Head title="Login CoffeeUhuy" />
 
-            <Form {...AuthenticatedSessionController.store.form()} resetOnSuccess={['password']} className="flex flex-col gap-6">
+            <Form
+                {...AuthenticatedSessionController.store.form()}
+                resetOnSuccess={['password']}
+                className="flex flex-col gap-6"
+            >
                 {({ processing, errors }) => (
                     <>
                         <div className="grid gap-6">
@@ -73,10 +77,10 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">
-                            Don't have an account?{' '}
-                            <TextLink href={register()} tabIndex={5}>
+                            © {new Date().getFullYear()} CoffeeUhuy. Semua Hak Dilindungi.
+                            {/* <TextLink href={register()} tabIndex={5}>
                                 Sign up
-                            </TextLink>
+                            </TextLink> */}
                         </div>
                     </>
                 )}

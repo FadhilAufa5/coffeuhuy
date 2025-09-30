@@ -42,7 +42,7 @@ export default function Welcome({ auth, products, events }: { auth: any; product
       <Navbar />
       <main>
         <Hero />
-        <CurvedLoop marqueeText="Tentang CoffeUhuy ✦" />
+        <CurvedLoop marqueeText="Tentang CoffeeUhuy ✦" />
         <About />
 
         {/* Bagian Menu */}
