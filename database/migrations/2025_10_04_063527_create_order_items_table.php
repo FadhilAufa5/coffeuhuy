@@ -14,14 +14,16 @@ return new class extends Migration
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
 
-            // relasi ke orders
+            // Foreign Keys
             $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
-
-            // relasi ke products
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
 
+            // Detail Produk pada saat order
+            $table->string('product_name'); // snapshot nama produk
+            $table->string('product_image')->nullable(); // snapshot gambar produk
+
             $table->integer('quantity'); // jumlah beli
-            $table->decimal('price', 10, 2); // harga produk saat order
+            $table->decimal('price', 10, 2); // harga saat order
 
             $table->timestamps();
         });

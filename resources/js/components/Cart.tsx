@@ -25,6 +25,10 @@ interface CartProps {
   handlePayment: () => void;
   onClose?: () => void; // opsional buat drawer mobile
   isMobile?: boolean;
+
+  // ✅ Tambahan props baru
+  paymentMethod: string;
+  setPaymentMethod: (method: string) => void;
 }
 
 export default function Cart({
@@ -37,6 +41,10 @@ export default function Cart({
   handlePayment,
   onClose,
   isMobile = false,
+
+  // ✅ Props tambahan
+  paymentMethod,
+  setPaymentMethod,
 }: CartProps) {
   return (
     <div
@@ -100,6 +108,22 @@ export default function Cart({
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Payment Method Selector */}
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Metode Pembayaran
+            </label>
+            <select
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2"
+            >
+              <option value="Cash">Cash</option>
+              <option value="Transfer">Transfer</option>
+              <option value="QRIS">QRIS</option>
+            </select>
           </div>
 
           {/* Totals */}

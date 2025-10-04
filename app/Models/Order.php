@@ -13,11 +13,11 @@ class Order extends Model
     /**
      * Atribut yang boleh diisi secara massal (mass assignable).
      */
-    protected $fillable = [
-        'total',
-        'status',
-    ];
-
+   protected $fillable = [
+    'total',
+    'status',
+    'payment_method',
+];
     /**
      * Relasi One-to-Many ke OrderItem.
      * Satu Order memiliki banyak OrderItem.

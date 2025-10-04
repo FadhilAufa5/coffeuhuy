@@ -23,6 +23,7 @@ export default function KasirIndex({ products }: { products: Product[] }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCart, setShowCart] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("Cash");
 
   // ➕ Tambah produk ke cart
   const addToCart = (product: Product) => {
@@ -72,17 +73,17 @@ export default function KasirIndex({ products }: { products: Product[] }) {
     return { subtotal, tax, total };
   }, [cart]);
 
-  // 🧾 Submit order
   const handlePayment = () => {
-    if (cart.length === 0) return;
+  if (cart.length === 0) return;
 
-    const orderData = {
-      items: cart.map((item) => ({
-        product_id: item.id,
-        quantity: item.quantity,
-      })),
-      total: total,
-    };
+ const orderData = {
+  items: cart.map((item) => ({
+    product_id: item.id,
+    quantity: item.quantity,
+  })),
+  total: total,
+  payment_method: paymentMethod,
+};
 
     router.post("/kasir", orderData, {
       onStart: () => setIsProcessing(true),
@@ -201,31 +202,36 @@ export default function KasirIndex({ products }: { products: Product[] }) {
       {cart.length > 0 && (
         <div className="hidden lg:flex">
           <Cart
-            cart={cart}
-            subtotal={subtotal}
-            tax={tax}
-            total={total}
-            isProcessing={isProcessing}
-            updateQuantity={updateQuantity}
-            handlePayment={handlePayment}
-          />
+  cart={cart}
+  subtotal={subtotal}
+  tax={tax}
+  total={total}
+  isProcessing={isProcessing}
+  updateQuantity={updateQuantity}
+  handlePayment={handlePayment}
+  paymentMethod={paymentMethod}
+  setPaymentMethod={setPaymentMethod}
+/>
         </div>
       )}
 
       {/* Cart Drawer Mobile */}
       {showCart && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex lg:hidden">
-          <Cart
-            cart={cart}
-            subtotal={subtotal}
-            tax={tax}
-            total={total}
-            isProcessing={isProcessing}
-            updateQuantity={updateQuantity}
-            handlePayment={handlePayment}
-            onClose={() => setShowCart(false)}
-            isMobile
-          />
+         <Cart
+  cart={cart}
+  subtotal={subtotal}
+  tax={tax}
+  total={total}
+  isProcessing={isProcessing}
+  updateQuantity={updateQuantity}
+  handlePayment={handlePayment}
+  onClose={() => setShowCart(false)}
+  isMobile
+  paymentMethod={paymentMethod}
+  setPaymentMethod={setPaymentMethod}
+/>
+
         </div>
       )}
     </div>

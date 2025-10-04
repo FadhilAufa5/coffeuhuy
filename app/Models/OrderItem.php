@@ -13,12 +13,15 @@ class OrderItem extends Model
     /**
      * Atribut yang boleh diisi secara massal.
      */
-    protected $fillable = [
-        'order_id',
-        'product_id',
-        'quantity',
-        'price',
-    ];
+   protected $fillable = [
+    'order_id',
+    'product_id',
+    'quantity',
+    'price',
+    'product_name',
+    'product_image',
+];
+
 
     /**
      * Relasi Many-to-One ke Order.
