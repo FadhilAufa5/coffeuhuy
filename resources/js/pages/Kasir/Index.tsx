@@ -24,6 +24,7 @@ export default function KasirIndex({ products }: { products: Product[] }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCart, setShowCart] = useState(false);
 
+  // ➕ Tambah produk ke cart
   const addToCart = (product: Product) => {
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id);
@@ -41,6 +42,7 @@ export default function KasirIndex({ products }: { products: Product[] }) {
     setShowCart(true);
   };
 
+  // 🔄 Update jumlah item
   const updateQuantity = (productId: number, amount: number) => {
     setCart((prev) =>
       prev
@@ -59,7 +61,7 @@ export default function KasirIndex({ products }: { products: Product[] }) {
     );
   };
 
-  // 👉 Hanya subtotal + pajak (11%), tanpa diskon
+  // 💰 Hitung subtotal, pajak (11%), total
   const { subtotal, tax, total } = useMemo(() => {
     const subtotal = cart.reduce(
       (sum, item) => sum + item.price * item.quantity,
@@ -70,6 +72,7 @@ export default function KasirIndex({ products }: { products: Product[] }) {
     return { subtotal, tax, total };
   }, [cart]);
 
+  // 🧾 Submit order
   const handlePayment = () => {
     if (cart.length === 0) return;
 
@@ -96,6 +99,7 @@ export default function KasirIndex({ products }: { products: Product[] }) {
     });
   };
 
+  // 📂 Kategori produk
   const categories = [
     "All",
     "Coffee",
@@ -104,6 +108,7 @@ export default function KasirIndex({ products }: { products: Product[] }) {
     "Pastry",
     "Heavy Meal",
   ];
+
   const productsToDisplay = products.filter(
     (p) => activeCategory === "All" || p.type === activeCategory
   );
@@ -117,7 +122,9 @@ export default function KasirIndex({ products }: { products: Product[] }) {
         <div className="flex justify-between items-center mb-4">
           <div>
             <h1 className="text-2xl font-bold">POS CoffeeUhuy</h1>
-            <p className="text-gray-500">Pilih produk untuk ditambahkan ke pesanan</p>
+            <p className="text-gray-500">
+              Pilih produk untuk ditambahkan ke pesanan
+            </p>
           </div>
 
           {/* Cart Button (mobile) */}

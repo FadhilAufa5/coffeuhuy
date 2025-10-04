@@ -39,9 +39,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('outlets', OutletController::class)
         ->only(['index', 'store', 'destroy']);
 
-    // Kasir
     Route::resource('kasir', KasirController::class)
-        ->only(['index', 'store', 'destroy']);
+    ->only(['index', 'store', 'show']);
+
+    // route khusus pembayaran
+    Route::post('/kasir/{order}/pay', [KasirController::class, 'pay'])->name('kasir.pay');
 });
 
 // Extra routes
