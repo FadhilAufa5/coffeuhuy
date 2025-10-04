@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\OutletController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KasirController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -36,6 +37,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Outlets
     Route::resource('outlets', OutletController::class)
+        ->only(['index', 'store', 'destroy']);
+
+    // Kasir
+    Route::resource('kasir', KasirController::class)
         ->only(['index', 'store', 'destroy']);
 });
 

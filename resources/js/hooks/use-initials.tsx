@@ -11,5 +11,10 @@ export function useInitials() {
         const lastInitial = names[names.length - 1].charAt(0);
 
         return `${firstInitial}${lastInitial}`.toUpperCase();
+
+        
     }, []);
+
+    
+
 }

@@ -18,6 +18,7 @@ import {
   ShoppingCart,
   Gift,
   MapPin,
+  Users,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -44,6 +45,11 @@ const menuNavItems: NavItem[] = [
     title: 'Outlets',
     href: '/outlets',
     icon: MapPin,
+  },
+  {
+    title: 'Kasir',
+    href: '/kasir',
+    icon: Users,
   },
 ];
 
