@@ -56,7 +56,7 @@ export default function Cart({
     >
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-800">Order Details</h2>
+        <h2 className="text-xl font-bold text-gray-800">Order Summary</h2>
         {isMobile && (
           <button
             onClick={onClose}
@@ -110,7 +110,7 @@ export default function Cart({
             ))}
           </div>
 
-          {/* Payment Method Selector */}
+          {/* Payment Method Selector
           <div className="mt-6">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Metode Pembayaran
@@ -124,7 +124,7 @@ export default function Cart({
               <option value="Transfer">Transfer</option>
               <option value="QRIS">QRIS</option>
             </select>
-          </div>
+          </div> */}
 
           {/* Totals */}
           <div className="mt-6 border-t pt-4 space-y-2 text-sm text-gray-700">
