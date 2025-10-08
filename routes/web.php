@@ -39,11 +39,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('outlets', OutletController::class)
         ->only(['index', 'store', 'destroy']);
 
-    Route::resource('kasir', KasirController::class)
-    ->only(['index', 'store', 'show']);
+   Route::resource('kasir', KasirController::class)
+        ->only(['index', 'store', 'show']);
 
-    // route khusus pembayaran
-    Route::post('/kasir/{order}/pay', [KasirController::class, 'pay'])->name('kasir.pay');
+      Route::post('/kasir/{order}/pay', [KasirController::class, 'pay'])->name('kasir.pay');
+    Route::post('/kasir/{order}/accept', [KasirController::class, 'accept'])->name('kasir.accept');
 });
 
 // Extra routes

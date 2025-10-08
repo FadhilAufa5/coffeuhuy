@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->decimal('total', 12, 2)->default(0); // total transaksi
-            $table->string('status')->default('pending'); // status order
-            $table->string('payment_method')->nullable(); 
+            $table->decimal('total', 12, 2)->default(0);
+            $table->string('status')->default('pending');
+            $table->string('payment_method')->nullable();
+            $table->boolean('confirmed')->default(false);
             $table->timestamps();
         });
     }

@@ -32,10 +32,6 @@ class OrderItem extends Model
         return $this->belongsTo(Order::class);
     }
 
-    /**
-     * Relasi Many-to-One ke Product.
-     * Satu OrderItem merujuk ke satu Product.
-     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
