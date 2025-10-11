@@ -25,40 +25,51 @@ class KasirController extends Controller
     }
 
     /**
-     * ✅ Simpan pesanan baru.
+     * ✅ Simpan pesanan baru (belum dibayar).
      */
-   public function store(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'items' => 'required|array|min:1',
-        'items.*.product_id' => 'required|integer|exists:products,id',
-        'items.*.quantity' => 'required|integer|min:1',
-        'total' => 'required|numeric|min:0',
-        'payment_method' => 'required|string|in:Cash,QRIS,Transfer',
-    ]);
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|integer|exists:products,id',
+            'items.*.quantity' => 'required|integer|min:1',
+            'total' => 'required|numeric|min:0',
+        ]);
 
-    if ($validator->fails()) {
-        return Redirect::back()->withErrors($validator);
-    }
+        if ($validator->fails()) {
+            return Redirect::back()->withErrors($validator);
+        }
 
-    try {
-        DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
-        // Langsung paid kalau metode pembayaran sudah dipilih
+          // 🔹 Generate nomor invoice
+        $today = now()->format('Ymd');
+        $lastOrder = Order::whereDate('created_at', now()->toDateString())
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $sequence = $lastOrder
+            ? intval(substr($lastOrder->invoice_number, -4)) + 1
+            : 1;
+
+      
+
+        // 🔹 Buat order baru
         $order = Order::create([
+            'invoice_number' => 'INV-' . now()->format('Ymd') . '-' . str_pad(Order::count() + 1, 4, '0', STR_PAD_LEFT),
             'total' => $request->total,
-            'status' => 'paid',
-            'payment_method' => $request->payment_method,
+            'status' => 'pending',
+            'payment_method' => null,
         ]);
 
         foreach ($request->items as $item) {
             $product = Product::findOrFail($item['product_id']);
-
             $order->items()->create([
-                'product_id'    => $product->id,
-                'quantity'      => $item['quantity'],
-                'price'         => $product->price,
-                'product_name'  => $product->name,
+                'product_id' => $product->id,
+                'quantity' => $item['quantity'],
+                'price' => $product->price,
+                'product_name' => $product->name,
                 'product_image' => $product->image,
             ]);
         }
@@ -71,9 +82,8 @@ class KasirController extends Controller
     }
 
     return Redirect::route('kasir.show', $order->id)
-        ->with('success', 'Pesanan berhasil dibuat & dibayar!');
+        ->with('success', 'Pesanan berhasil dibuat! Silakan lakukan pembayaran.');
 }
-
 
     /**
      * ✅ Tampilkan detail pesanan.
@@ -88,7 +98,7 @@ class KasirController extends Controller
     }
 
     /**
-     * ✅ Update status menjadi "paid" jika pembayaran dilakukan setelah order.
+     * ✅ Proses pembayaran (ubah ke paid).
      */
     public function pay(Request $request, Order $order)
     {
@@ -105,17 +115,18 @@ class KasirController extends Controller
             ->with('success', 'Pembayaran berhasil!');
     }
 
-    
+    /**
+     * ✅ Setelah pesanan selesai diproses (kitchen/serving done).
+     */
     public function accept(Request $request, Order $order)
     {
-      
         if ($order->status !== 'paid') {
             return Redirect::back()->with('error', 'Pesanan belum dibayar, tidak bisa di-accept.');
         }
 
         $order->update([
             'status' => 'accepted',
-            'confirmed' => true, // jika kolom ini ada
+            'confirmed' => true,
         ]);
 
         return Redirect::back()->with('success', 'Pesanan telah diterima!');

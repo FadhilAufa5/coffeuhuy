@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { formatRupiah } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
 import InvoicePrint from "./InvoicePrint";
 
 interface Product {
@@ -22,10 +23,12 @@ interface Order {
   total: number;
   status: string;
   buyer_name: string;
+  payment_method : string;
+  invoice_number : string;
 }
 
 export default function OrderShow({ order }: { order: Order }) {
-  const [paymentMethod, setPaymentMethod] = useState("Cash");
+  const [paymentMethod, setPaymentMethod] = useState(order.payment_method || "QRIS");
   const [isProcessing, setIsProcessing] = useState(false);
   const [cashGiven, setCashGiven] = useState("");
   const [customPrice, setCustomPrice] = useState("");
@@ -33,6 +36,9 @@ export default function OrderShow({ order }: { order: Order }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
   const [animatedTotal, setAnimatedTotal] = useState(0);
+  const [currentStatus, setCurrentStatus] = useState(order.status);
+  const invoiceNumber = order.invoice_number || "-";
+
 
   const subtotal = order.items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
@@ -41,7 +47,7 @@ export default function OrderShow({ order }: { order: Order }) {
   const tax = subtotal * 0.11;
   const total = subtotal + tax;
 
-  // Animasi total
+  // 🔹 Animasi angka total
   useEffect(() => {
     let start = 0;
     const duration = 500;
@@ -57,7 +63,7 @@ export default function OrderShow({ order }: { order: Order }) {
     return () => clearInterval(interval);
   }, [total]);
 
-  // Hitung kembalian
+  // 🔹 Hitung kembalian
   useEffect(() => {
     if (paymentMethod === "Cash" && cashGiven && customPrice) {
       const price = parseFloat(customPrice) || 0;
@@ -68,7 +74,8 @@ export default function OrderShow({ order }: { order: Order }) {
     }
   }, [cashGiven, customPrice, paymentMethod]);
 
-  const handlePayment = () => {
+  // 🔹 Handle pembayaran
+  const handlePayment = async () => {
     if (paymentMethod === "Cash" && (!cashGiven || !customPrice)) {
       alert("Masukkan harga dan uang yang diberikan!");
       return;
@@ -76,23 +83,34 @@ export default function OrderShow({ order }: { order: Order }) {
 
     setIsProcessing(true);
 
-    // Simulasi proses pembayaran
-    setTimeout(() => {
-      setIsProcessing(false);
-      setShowSuccess(true);
+    try {
+      await axios.post(`/kasir/${order.id}/pay`, {
+        payment_method: paymentMethod,
+      });
 
-      // Setelah animasi sukses, tampilkan invoice
+      // Simulasi loading dan animasi
       setTimeout(() => {
-        setShowSuccess(false);
-        setShowInvoice(true);
+        setIsProcessing(false);
+        setShowSuccess(true);
+        setCurrentStatus("paid");
+
+        // Setelah animasi sukses, tampilkan invoice dan print otomatis
         setTimeout(() => {
-          window.print(); // cetak otomatis
-        }, 1000);
-      }, 1800);
-    }, 1500);
+          setShowSuccess(false);
+          setShowInvoice(true);
+          setTimeout(() => {
+            window.print();
+          }, 1000);
+        }, 1800);
+      }, 1500);
+    } catch (error) {
+      console.error(error);
+      alert("Gagal memproses pembayaran!");
+      setIsProcessing(false);
+    }
   };
 
-  // 🔹 Jika sudah showInvoice, langsung tampilkan struk
+  // 🔹 Tampilan invoice setelah sukses bayar
   if (showInvoice) {
     return (
       <div className="bg-gray-100 min-h-screen flex items-center justify-center print:p-0">
@@ -148,34 +166,30 @@ export default function OrderShow({ order }: { order: Order }) {
           </button>
 
           <h1 className="text-2xl font-bold text-gray-800">
-            Order #{order.id}
-          </h1>
+        {order.invoice_number || `ORD-${order.id}`}
+      </h1>
 
           <span
             className={`px-4 py-1 rounded-full text-sm font-semibold ${
-              order.status === "paid"
+              currentStatus === "paid"
                 ? "bg-green-100 text-green-700"
                 : "bg-yellow-100 text-yellow-700"
             }`}
           >
-            {order.status === "paid" ? "Lunas" : "Belum Dibayar"}
+            {currentStatus === "paid" ? "Lunas" : "Belum Dibayar"}
           </span>
         </div>
 
         {/* Order Items */}
         <div className="bg-white rounded-xl shadow p-4 space-y-3">
-          <h2 className="font-semibold text-lg border-b pb-2">
-            Daftar Barang
-          </h2>
+          <h2 className="font-semibold text-lg border-b pb-2">Daftar Barang</h2>
           {order.items.map((item) => (
             <div
               key={item.id}
               className="flex justify-between items-center border-b py-2 last:border-none"
             >
               <div>
-                <p className="font-medium text-gray-800">
-                  {item.product.name}
-                </p>
+                <p className="font-medium text-gray-800">{item.product.name}</p>
                 <p className="text-sm text-gray-500">
                   {item.quantity} × {formatRupiah(item.product.price)}
                 </p>
@@ -206,79 +220,92 @@ export default function OrderShow({ order }: { order: Order }) {
           </div>
 
           {/* Payment Method */}
-          <div className="mt-4">
-            <label className="block font-semibold mb-2">
-              Metode Pembayaran
-            </label>
-            <div className="flex gap-3">
-              {["Cash", "QRIS", "Bank Transfer"].map((method) => (
-                <button
-                  key={method}
-                  onClick={() => setPaymentMethod(method)}
-                  className={`px-4 py-2 rounded-md border transition ${
-                    paymentMethod === method
-                      ? "bg-red-700 text-white border-red-800"
-                      : "bg-gray-100 hover:bg-gray-200"
-                  }`}
-                >
-                  {method}
-                </button>
-              ))}
-            </div>
-          </div>
+          {currentStatus === "pending" && (
+            <>
+              <div className="mt-4">
+                <label className="block font-semibold mb-2">
+                  Metode Pembayaran
+                </label>
+                <div className="flex gap-3">
+                  {["Cash", "QRIS", "Transfer"].map((method) => (
+                    <button
+                      key={method}
+                      onClick={() => setPaymentMethod(method)}
+                      className={`px-4 py-2 rounded-md border transition ${
+                        paymentMethod === method
+                          ? "bg-red-700 text-white border-red-800"
+                          : "bg-gray-100 hover:bg-gray-200"
+                      }`}
+                    >
+                      {method}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-          {/* Cash Inputs */}
-          {paymentMethod === "Cash" && (
-            <div className="mt-4 space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Harga Total (Rp)
-                </label>
-                <input
-                  type="number"
-                  value={customPrice}
-                  onChange={(e) => setCustomPrice(e.target.value)}
-                  className="w-full mt-1 p-2 border rounded-md"
-                  placeholder="Masukkan harga total"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Uang Diberikan (Rp)
-                </label>
-                <input
-                  type="number"
-                  value={cashGiven}
-                  onChange={(e) => setCashGiven(e.target.value)}
-                  className="w-full mt-1 p-2 border rounded-md"
-                  placeholder="Masukkan jumlah uang"
-                />
-              </div>
-              {cashGiven && customPrice && (
-                <p
-                  className={`font-semibold ${
-                    change < 0 ? "text-red-600" : "text-green-700"
-                  }`}
-                >
-                  {change < 0
-                    ? `Kurang ${formatRupiah(Math.abs(change))}`
-                    : `Kembalian: ${formatRupiah(change)}`}
-                </p>
+              {/* Cash Inputs */}
+              {paymentMethod === "Cash" && (
+                <div className="mt-4 space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Harga Total (Rp)
+                    </label>
+                    <input
+                      type="number"
+                      value={customPrice}
+                      onChange={(e) => setCustomPrice(e.target.value)}
+                      className="w-full mt-1 p-2 border rounded-md"
+                      placeholder="Masukkan harga total"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Uang Diberikan (Rp)
+                    </label>
+                    <input
+                      type="number"
+                      value={cashGiven}
+                      onChange={(e) => setCashGiven(e.target.value)}
+                      className="w-full mt-1 p-2 border rounded-md"
+                      placeholder="Masukkan jumlah uang"
+                    />
+                  </div>
+                  {cashGiven && customPrice && (
+                    <p
+                      className={`font-semibold ${
+                        change < 0 ? "text-red-600" : "text-green-700"
+                      }`}
+                    >
+                      {change < 0
+                        ? `Kurang ${formatRupiah(Math.abs(change))}`
+                        : `Kembalian: ${formatRupiah(change)}`}
+                    </p>
+                  )}
+                </div>
               )}
-            </div>
+
+              <button
+                onClick={handlePayment}
+                disabled={isProcessing}
+                className="mt-6 w-full bg-red-700 hover:bg-red-600 text-white py-3 rounded-md font-semibold disabled:bg-gray-400"
+              >
+                {isProcessing
+                  ? "Memproses..."
+                  : `Bayar Sekarang (${paymentMethod})`}
+              </button>
+            </>
           )}
 
-          <button
-            onClick={handlePayment}
-            disabled={isProcessing}
-            className="mt-6 w-full bg-red-700 hover:bg-red-600 text-white py-3 rounded-md font-semibold disabled:bg-gray-400"
-          >
-            {isProcessing
-              ? "Memproses..."
-              : `Bayar Sekarang (${paymentMethod})`}
-          </button>
+          {currentStatus === "paid" && (
+            <button
+              onClick={() => (window.location.href = "/kasir")}
+              className="mt-6 w-full bg-green-700 hover:bg-green-600 text-white py-3 rounded-md font-semibold"
+            >
+              Kembali ke Beranda
+            </button>
+          )}
         </div>
-      </div>
+      </div>i
     </div>
   );
 }

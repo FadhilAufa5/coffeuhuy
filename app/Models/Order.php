@@ -14,14 +14,13 @@ class Order extends Model
      * Atribut yang boleh diisi secara massal (mass assignable).
      */
    protected $fillable = [
+    'invoice_number',
     'total',
     'status',
     'payment_method',
+    'confirmed',
 ];
-    /**
-     * Relasi One-to-Many ke OrderItem.
-     * Satu Order memiliki banyak OrderItem.
-     */
+  
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);

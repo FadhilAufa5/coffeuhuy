@@ -23,10 +23,7 @@ class OrderItem extends Model
 ];
 
 
-    /**
-     * Relasi Many-to-One ke Order.
-     * Satu OrderItem dimiliki oleh satu Order.
-     */
+    
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
