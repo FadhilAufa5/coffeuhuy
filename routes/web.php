@@ -40,7 +40,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->only(['index', 'store', 'destroy']);
 
    Route::resource('kasir', KasirController::class)
-        ->only(['index', 'store', 'show']);
+    ->only(['index', 'store', 'show']);
+
+    Route::get('/adminkasir', [KasirController::class, 'adminkasir'])->name('kasir.adminkasir');
 
       Route::post('/kasir/{order}/pay', [KasirController::class, 'pay'])->name('kasir.pay');
     Route::post('/kasir/{order}/accept', [KasirController::class, 'accept'])->name('kasir.accept');

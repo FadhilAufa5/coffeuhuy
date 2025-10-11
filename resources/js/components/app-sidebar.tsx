@@ -19,6 +19,8 @@ import {
   Gift,
   MapPin,
   Users,
+  Layout,
+
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -45,6 +47,15 @@ const menuNavItems: NavItem[] = [
     title: 'Outlets',
     href: '/outlets',
     icon: MapPin,
+  },
+
+];
+const cashierNavItems: NavItem[] = [
+
+  {
+    title: 'Dashboard Kasir',
+    href: '/adminkasir',
+    icon: LayoutGrid,
   },
   {
     title: 'Kasir',
@@ -76,6 +87,8 @@ export function AppSidebar() {
 
         {/* Group: Menus */}
         <NavMain items={menuNavItems} label="Menus" />
+        {/* Group: Menus */}
+        <NavMain items={cashierNavItems} label="Cashier Menus" />
       </SidebarContent>
 
       <SidebarFooter>

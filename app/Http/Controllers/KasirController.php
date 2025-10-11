@@ -24,6 +24,33 @@ class KasirController extends Controller
         ]);
     }
 
+    public function adminkasir()
+{
+    // Contoh data — nanti bisa diganti query nyata dari database
+    $data = [
+        'total_sales' => 15200000,
+        'total_items_sold' => 320,
+        'total_transactions' => 57,
+        'top_products' => [
+            ['id' => 1, 'name' => 'Cappuccino', 'total_sold' => 85, 'total_revenue' => 2550000],
+            ['id' => 2, 'name' => 'Latte', 'total_sold' => 60, 'total_revenue' => 1800000],
+            ['id' => 3, 'name' => 'Croissant', 'total_sold' => 45, 'total_revenue' => 900000],
+        ],
+        'sales_by_day' => [
+            ['date' => '2025-10-05', 'total' => 1200000],
+            ['date' => '2025-10-06', 'total' => 2000000],
+            ['date' => '2025-10-07', 'total' => 1850000],
+            ['date' => '2025-10-08', 'total' => 2600000],
+            ['date' => '2025-10-09', 'total' => 1900000],
+        ],
+    ];
+
+    return inertia('Kasir/AdminKasir', [
+        'data' => $data,
+    ]);
+}
+
+    
     /**
      * ✅ Simpan pesanan baru (belum dibayar).
      */
@@ -43,7 +70,7 @@ class KasirController extends Controller
         try {
             DB::beginTransaction();
 
-          // 🔹 Generate nomor invoice
+       
         $today = now()->format('Ymd');
         $lastOrder = Order::whereDate('created_at', now()->toDateString())
             ->orderBy('id', 'desc')
@@ -53,9 +80,7 @@ class KasirController extends Controller
             ? intval(substr($lastOrder->invoice_number, -4)) + 1
             : 1;
 
-      
 
-        // 🔹 Buat order baru
         $order = Order::create([
             'invoice_number' => 'INV-' . now()->format('Ymd') . '-' . str_pad(Order::count() + 1, 4, '0', STR_PAD_LEFT),
             'total' => $request->total,
