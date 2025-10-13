@@ -18,8 +18,7 @@ import {
   ShoppingCart,
   Gift,
   MapPin,
-  Users,
-  Layout,
+  HandCoins
 
 } from 'lucide-react';
 import AppLogo from './app-logo';
@@ -60,7 +59,7 @@ const cashierNavItems: NavItem[] = [
   {
     title: 'Kasir',
     href: '/kasir',
-    icon: Users,
+    icon: HandCoins,
   },
 ];
 

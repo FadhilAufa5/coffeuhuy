@@ -261,7 +261,7 @@ export default function CreateProduct({
           )}
         </AnimatePresence>
 
-        {/* Confirm Delete */}
+        
         <ConfirmDeleteModal
           isOpen={!!deleteProduct}
           onClose={() => setDeleteProduct(null)}

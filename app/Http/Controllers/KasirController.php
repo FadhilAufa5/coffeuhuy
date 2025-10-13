@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class KasirController extends Controller
 {
@@ -24,35 +25,84 @@ class KasirController extends Controller
         ]);
     }
 
-    public function adminkasir()
+   public function adminkasir(Request $request)
 {
-    // Contoh data — nanti bisa diganti query nyata dari database
+    $period = $request->input('period', 'day'); // default: harian
+
+    $from = $request->input('from')
+        ? \Carbon\Carbon::parse($request->input('from'))->startOfDay()
+        : now()->subDays(7)->startOfDay();
+
+    $to = $request->input('to')
+        ? \Carbon\Carbon::parse($request->input('to'))->endOfDay()
+        : now()->endOfDay();
+
+    if ($from->greaterThan($to)) {
+        return Redirect::back()->with('error', 'Rentang tanggal tidak valid.');
+    }
+
+    $orderQuery = Order::whereIn('status', ['paid', 'accepted'])
+        ->whereBetween('created_at', [$from, $to]);
+
+    $total_sales = $orderQuery->sum('total');
+    $total_items_sold = DB::table('order_items')
+        ->join('orders', 'order_items.order_id', '=', 'orders.id')
+        ->whereIn('orders.status', ['paid', 'accepted'])
+        ->whereBetween('orders.created_at', [$from, $to])
+        ->sum('order_items.quantity');
+    $total_transactions = $orderQuery->count();
+
+    // 🔹 Produk terjual (untuk diagram pie)
+    $product_sales = DB::table('order_items')
+        ->join('orders', 'order_items.order_id', '=', 'orders.id')
+        ->join('products', 'order_items.product_id', '=', 'products.id')
+        ->whereIn('orders.status', ['paid', 'accepted'])
+        ->whereBetween('orders.created_at', [$from, $to])
+        ->select(
+            'products.name as product',
+            DB::raw('SUM(order_items.quantity) as total_sold'),
+            DB::raw('SUM(order_items.price * order_items.quantity) as revenue')
+        )
+        ->groupBy('products.name')
+        ->orderByDesc('revenue')
+        ->get();
+
+    // 🔹 Pendapatan berdasarkan periode
+    $dateSelect = match ($period) {
+        'month' => DB::raw("DATE_FORMAT(created_at, '%Y-%m') as date"),
+        'year'  => DB::raw("DATE_FORMAT(created_at, '%Y') as date"),
+        default => DB::raw("DATE(created_at) as date"),
+    };
+
+    $sales_chart = DB::table('orders')
+        ->whereIn('status', ['paid', 'accepted'])
+        ->whereBetween('created_at', [$from, $to])
+        ->select($dateSelect, DB::raw('SUM(total) as total'))
+        ->groupBy('date')
+        ->orderBy('date', 'asc')
+        ->get();
+
     $data = [
-        'total_sales' => 15200000,
-        'total_items_sold' => 320,
-        'total_transactions' => 57,
-        'top_products' => [
-            ['id' => 1, 'name' => 'Cappuccino', 'total_sold' => 85, 'total_revenue' => 2550000],
-            ['id' => 2, 'name' => 'Latte', 'total_sold' => 60, 'total_revenue' => 1800000],
-            ['id' => 3, 'name' => 'Croissant', 'total_sold' => 45, 'total_revenue' => 900000],
-        ],
-        'sales_by_day' => [
-            ['date' => '2025-10-05', 'total' => 1200000],
-            ['date' => '2025-10-06', 'total' => 2000000],
-            ['date' => '2025-10-07', 'total' => 1850000],
-            ['date' => '2025-10-08', 'total' => 2600000],
-            ['date' => '2025-10-09', 'total' => 1900000],
-        ],
+        'total_sales' => $total_sales,
+        'total_items_sold' => $total_items_sold,
+        'total_transactions' => $total_transactions,
+        'product_sales' => $product_sales,
+        'sales_chart' => $sales_chart,
     ];
 
     return inertia('Kasir/AdminKasir', [
         'data' => $data,
+        'filters' => [
+            'from' => $from->toDateString(),
+            'to' => $to->toDateString(),
+            'period' => $period,
+        ],
     ]);
 }
 
-    
+
     /**
-     * ✅ Simpan pesanan baru (belum dibayar).
+     * ✅ Simpan pesanan baru.
      */
     public function store(Request $request)
     {
@@ -70,45 +120,33 @@ class KasirController extends Controller
         try {
             DB::beginTransaction();
 
-       
-        $today = now()->format('Ymd');
-        $lastOrder = Order::whereDate('created_at', now()->toDateString())
-            ->orderBy('id', 'desc')
-            ->first();
-
-        $sequence = $lastOrder
-            ? intval(substr($lastOrder->invoice_number, -4)) + 1
-            : 1;
-
-
-        $order = Order::create([
-            'invoice_number' => 'INV-' . now()->format('Ymd') . '-' . str_pad(Order::count() + 1, 4, '0', STR_PAD_LEFT),
-            'total' => $request->total,
-            'status' => 'pending',
-            'payment_method' => null,
-        ]);
-
-        foreach ($request->items as $item) {
-            $product = Product::findOrFail($item['product_id']);
-            $order->items()->create([
-                'product_id' => $product->id,
-                'quantity' => $item['quantity'],
-                'price' => $product->price,
-                'product_name' => $product->name,
-                'product_image' => $product->image,
+            $order = Order::create([
+                'invoice_number' => 'INV-' . now()->format('Ymd') . '-' . str_pad(Order::count() + 1, 4, '0', STR_PAD_LEFT),
+                'total' => $request->total,
+                'status' => 'pending',
+                'payment_method' => null,
             ]);
+
+            foreach ($request->items as $item) {
+                $product = Product::findOrFail($item['product_id']);
+                $order->items()->create([
+                    'product_id' => $product->id,
+                    'quantity' => $item['quantity'],
+                    'price' => $product->price,
+                    'product_name' => $product->name,
+                    'product_image' => $product->image,
+                ]);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with('error', 'Gagal memproses pesanan.');
         }
 
-        DB::commit();
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return Redirect::back()->with('error', 'Gagal memproses pesanan.');
+        return Redirect::route('kasir.show', $order->id)
+            ->with('success', 'Pesanan berhasil dibuat! Silakan lakukan pembayaran.');
     }
-
-    return Redirect::route('kasir.show', $order->id)
-        ->with('success', 'Pesanan berhasil dibuat! Silakan lakukan pembayaran.');
-}
 
     /**
      * ✅ Tampilkan detail pesanan.
@@ -123,7 +161,7 @@ class KasirController extends Controller
     }
 
     /**
-     * ✅ Proses pembayaran (ubah ke paid).
+     * ✅ Proses pembayaran.
      */
     public function pay(Request $request, Order $order)
     {
@@ -141,7 +179,7 @@ class KasirController extends Controller
     }
 
     /**
-     * ✅ Setelah pesanan selesai diproses (kitchen/serving done).
+     * ✅ Terima pesanan setelah dibayar.
      */
     public function accept(Request $request, Order $order)
     {
