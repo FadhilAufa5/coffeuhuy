@@ -23,8 +23,8 @@ interface Order {
   total: number;
   status: string;
   buyer_name: string;
-  payment_method : string;
-  invoice_number : string;
+  payment_method: string;
+  invoice_number: string;
 }
 
 export default function OrderShow({ order }: { order: Order }) {
@@ -37,8 +37,10 @@ export default function OrderShow({ order }: { order: Order }) {
   const [showInvoice, setShowInvoice] = useState(false);
   const [animatedTotal, setAnimatedTotal] = useState(0);
   const [currentStatus, setCurrentStatus] = useState(order.status);
+  const [selectedBank, setSelectedBank] = useState(""); // ✅ bank yang dipilih
   const invoiceNumber = order.invoice_number || "-";
 
+  const banks = ["BCA", "Mandiri", "BRI", "BNI", "CIMB Niaga", "BSI"]; // ✅ daftar bank
 
   const subtotal = order.items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
@@ -81,11 +83,18 @@ export default function OrderShow({ order }: { order: Order }) {
       return;
     }
 
+    // ✅ Validasi bank saat debit
+    if (paymentMethod === "Debit" && !selectedBank) {
+      alert("Pilih bank terlebih dahulu!");
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
       await axios.post(`/kasir/${order.id}/pay`, {
         payment_method: paymentMethod,
+        bank: selectedBank, // ✅ kirim data bank jika debit
       });
 
       // Simulasi loading dan animasi
@@ -166,8 +175,8 @@ export default function OrderShow({ order }: { order: Order }) {
           </button>
 
           <h1 className="text-2xl font-bold text-gray-800">
-        {order.invoice_number || `ORD-${order.id}`}
-      </h1>
+            {order.invoice_number || `ORD-${order.id}`}
+          </h1>
 
           <span
             className={`px-4 py-1 rounded-full text-sm font-semibold ${
@@ -227,7 +236,7 @@ export default function OrderShow({ order }: { order: Order }) {
                   Metode Pembayaran
                 </label>
                 <div className="flex gap-3">
-                  {["Cash", "QRIS", "Transfer"].map((method) => (
+                  {["Cash", "QRIS", "Debit"].map((method) => (
                     <button
                       key={method}
                       onClick={() => setPaymentMethod(method)}
@@ -284,6 +293,35 @@ export default function OrderShow({ order }: { order: Order }) {
                 </div>
               )}
 
+              {/* ✅ Tambahan: Pilihan Bank untuk Debit */}
+              {paymentMethod === "Debit" && (
+                <div className="mt-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Pilih Bank
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {banks.map((bank) => (
+                      <button
+                        key={bank}
+                        onClick={() => setSelectedBank(bank)}
+                        className={`py-2 px-3 rounded-md border transition text-sm font-medium ${
+                          selectedBank === bank
+                            ? "bg-red-800 hover:bg-red-700 text-white border-red-900"
+                            : "bg-gray-100 hover:bg-gray-200"
+                        }`}
+                      >
+                        {bank}
+                      </button>
+                    ))}
+                  </div>
+                  {selectedBank && (
+                    <p className="mt-2 text-sm text-gray-600">
+                      Bank dipilih: <span className="font-semibold">{selectedBank}</span>
+                    </p>
+                  )}
+                </div>
+              )}
+
               <button
                 onClick={handlePayment}
                 disabled={isProcessing}
@@ -305,7 +343,7 @@ export default function OrderShow({ order }: { order: Order }) {
             </button>
           )}
         </div>
-      </div>i
+      </div>
     </div>
   );
 }

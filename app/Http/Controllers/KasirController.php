@@ -166,7 +166,7 @@ class KasirController extends Controller
     public function pay(Request $request, Order $order)
     {
         $request->validate([
-            'payment_method' => 'required|string|in:Cash,QRIS,Transfer',
+            'payment_method' => 'required|string|in:Cash,QRIS,Debit',
         ]);
 
         $order->update([
