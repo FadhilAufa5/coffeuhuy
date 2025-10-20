@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"; // <-- Impor useEffect
 import { Link, usePage, router } from "@inertiajs/react";
-import { LogOut, LayoutGrid, HandCoins, House, X, Menu } from "lucide-react";
+import { LogOut, LayoutGrid, HandCoins, House, X, Menu, History } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner"; 
@@ -13,6 +13,7 @@ export default function NavbarKasir() {
   const navItems = [
     { name: "Dashboard Kasir", href: "/adminkasir", icon: LayoutGrid },
     { name: "Kasir", href: "/kasir", icon: HandCoins },
+    { name: "History", href: "/historykasir", icon: History },
     { name: "Uhuy", href: "/dashboard", icon: House },
   ];
   

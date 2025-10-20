@@ -25,81 +25,137 @@ class KasirController extends Controller
         ]);
     }
 
-   public function adminkasir(Request $request)
+    /**
+     * ✅ Riwayat transaksi kasir (bisa difilter).
+     */
+    public function historykasir(Request $request)
 {
-    $period = $request->input('period', 'day'); // default: harian
+    // 🧩 Validasi input filter
+    $validated = $request->validate([
+        'search'          => 'nullable|string|max:50',
+        'from'            => 'nullable|date',
+        'to'              => 'nullable|date|after_or_equal:from',
+        'status'          => 'nullable|string|in:pending,paid,accepted,all',
+        'payment_method'  => 'nullable|string|in:Cash,QRIS,Debit,all',
+    ]);
 
-    $from = $request->input('from')
-        ? \Carbon\Carbon::parse($request->input('from'))->startOfDay()
-        : now()->subDays(7)->startOfDay();
+    // Simpan filter untuk dikirim balik ke frontend
+    $filters = $request->only(['search', 'from', 'to', 'status', 'payment_method']);
 
-    $to = $request->input('to')
-        ? \Carbon\Carbon::parse($request->input('to'))->endOfDay()
-        : now()->endOfDay();
+    // 🧮 Query dasar orders
+    $orders = Order::with('items')
+        // 🔍 Cari berdasarkan invoice_number
+        ->when($request->filled('search'), function ($query) use ($request) {
+            $query->where('invoice_number', 'like', "%{$request->search}%");
+        })
 
-    if ($from->greaterThan($to)) {
-        return Redirect::back()->with('error', 'Rentang tanggal tidak valid.');
-    }
+        // 📅 Filter tanggal (dari - sampai)
+        ->when($request->filled('from'), function ($query) use ($request) {
+            $query->whereDate('created_at', '>=', $request->from);
+        })
+        ->when($request->filled('to'), function ($query) use ($request) {
+            $query->whereDate('created_at', '<=', $request->to);
+        })
 
-    $orderQuery = Order::whereIn('status', ['paid', 'accepted'])
-        ->whereBetween('created_at', [$from, $to]);
+        // 🏷️ Filter status (pending, paid, accepted)
+        ->when($request->status && $request->status !== 'all', function ($query) use ($request) {
+            $query->where('status', $request->status);
+        })
 
-    $total_sales = $orderQuery->sum('total');
-    $total_items_sold = DB::table('order_items')
-        ->join('orders', 'order_items.order_id', '=', 'orders.id')
-        ->whereIn('orders.status', ['paid', 'accepted'])
-        ->whereBetween('orders.created_at', [$from, $to])
-        ->sum('order_items.quantity');
-    $total_transactions = $orderQuery->count();
+        // 💳 Filter metode pembayaran (Cash, QRIS, Debit)
+        ->when($request->payment_method && $request->payment_method !== 'all', function ($query) use ($request) {
+            $query->where('payment_method', $request->payment_method);
+        })
 
-    // 🔹 Produk terjual (untuk diagram pie)
-    $product_sales = DB::table('order_items')
-        ->join('orders', 'order_items.order_id', '=', 'orders.id')
-        ->join('products', 'order_items.product_id', '=', 'products.id')
-        ->whereIn('orders.status', ['paid', 'accepted'])
-        ->whereBetween('orders.created_at', [$from, $to])
-        ->select(
-            'products.name as product',
-            DB::raw('SUM(order_items.quantity) as total_sold'),
-            DB::raw('SUM(order_items.price * order_items.quantity) as revenue')
-        )
-        ->groupBy('products.name')
-        ->orderByDesc('revenue')
-        ->get();
+        // 🕓 Urutkan dari terbaru
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
 
-    // 🔹 Pendapatan berdasarkan periode
-    $dateSelect = match ($period) {
-        'month' => DB::raw("DATE_FORMAT(created_at, '%Y-%m') as date"),
-        'year'  => DB::raw("DATE_FORMAT(created_at, '%Y') as date"),
-        default => DB::raw("DATE(created_at) as date"),
-    };
-
-    $sales_chart = DB::table('orders')
-        ->whereIn('status', ['paid', 'accepted'])
-        ->whereBetween('created_at', [$from, $to])
-        ->select($dateSelect, DB::raw('SUM(total) as total'))
-        ->groupBy('date')
-        ->orderBy('date', 'asc')
-        ->get();
-
-    $data = [
-        'total_sales' => $total_sales,
-        'total_items_sold' => $total_items_sold,
-        'total_transactions' => $total_transactions,
-        'product_sales' => $product_sales,
-        'sales_chart' => $sales_chart,
-    ];
-
-    return inertia('Kasir/AdminKasir', [
-        'data' => $data,
-        'filters' => [
-            'from' => $from->toDateString(),
-            'to' => $to->toDateString(),
-            'period' => $period,
-        ],
+    // 🔁 Kirim data ke halaman Inertia
+    return Inertia::render('Kasir/History', [
+        'orders'  => $orders,
+        'filters' => $filters,
     ]);
 }
 
+
+    /**
+     * ✅ Statistik dan rekap kasir admin.
+     */
+    public function adminkasir(Request $request)
+    {
+        $period = $request->input('period', 'day');
+
+        $from = $request->input('from')
+            ? Carbon::parse($request->input('from'))->startOfDay()
+            : now()->subDays(7)->startOfDay();
+
+        $to = $request->input('to')
+            ? Carbon::parse($request->input('to'))->endOfDay()
+            : now()->endOfDay();
+
+        if ($from->greaterThan($to)) {
+            return Redirect::back()->with('error', 'Rentang tanggal tidak valid.');
+        }
+
+        $orderQuery = Order::whereIn('status', ['paid', 'accepted'])
+            ->whereBetween('created_at', [$from, $to]);
+
+        $total_sales = $orderQuery->sum('total');
+        $total_items_sold = DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->whereIn('orders.status', ['paid', 'accepted'])
+            ->whereBetween('orders.created_at', [$from, $to])
+            ->sum('order_items.quantity');
+
+        $total_transactions = $orderQuery->count();
+
+        $product_sales = DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->whereIn('orders.status', ['paid', 'accepted'])
+            ->whereBetween('orders.created_at', [$from, $to])
+            ->select(
+                'products.name as product',
+                DB::raw('SUM(order_items.quantity) as total_sold'),
+                DB::raw('SUM(order_items.price * order_items.quantity) as revenue')
+            )
+            ->groupBy('products.name')
+            ->orderByDesc('revenue')
+            ->get();
+
+        $dateSelect = match ($period) {
+            'month' => DB::raw("DATE_FORMAT(created_at, '%Y-%m') as date"),
+            'year'  => DB::raw("DATE_FORMAT(created_at, '%Y') as date"),
+            default => DB::raw("DATE(created_at) as date"),
+        };
+
+        $sales_chart = DB::table('orders')
+            ->whereIn('status', ['paid', 'accepted'])
+            ->whereBetween('created_at', [$from, $to])
+            ->select($dateSelect, DB::raw('SUM(total) as total'))
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->get();
+
+        $data = [
+            'total_sales' => $total_sales,
+            'total_items_sold' => $total_items_sold,
+            'total_transactions' => $total_transactions,
+            'product_sales' => $product_sales,
+            'sales_chart' => $sales_chart,
+        ];
+
+        return Inertia::render('Kasir/AdminKasir', [
+            'data' => $data,
+            'filters' => [
+                'from' => $from->toDateString(),
+                'to' => $to->toDateString(),
+                'period' => $period,
+            ],
+        ]);
+    }
 
     /**
      * ✅ Simpan pesanan baru.

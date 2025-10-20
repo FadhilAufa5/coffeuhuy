@@ -43,8 +43,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ->only(['index', 'store', 'show']);
 
     Route::get('/adminkasir', [KasirController::class, 'adminkasir'])->name('kasir.adminkasir');
+    Route::get('/historykasir', [KasirController::class, 'historykasir'])->name('kasir.historykasir');
 
-      Route::post('/kasir/{order}/pay', [KasirController::class, 'pay'])->name('kasir.pay');
+
+    Route::post('/kasir/{order}/pay', [KasirController::class, 'pay'])->name('kasir.pay');
     Route::post('/kasir/{order}/accept', [KasirController::class, 'accept'])->name('kasir.accept');
 });
 
