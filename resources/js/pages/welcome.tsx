@@ -16,10 +16,10 @@ import { X } from "lucide-react";
 import DomeGallery from '@/components/DomeGallery';
 import ScrollToTopButton from '@/components/ScrollTopButton';
 
-// Definisikan tipe untuk item Masonry agar lebih jelas
+
 interface MasonryItem {
   id: string;
-  img: string;
+  img: string; 
   url: string;
   height: number;
 }

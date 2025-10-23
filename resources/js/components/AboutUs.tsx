@@ -32,14 +32,13 @@ export default function AboutUs() {
           className="space-y-6"
         >
           <h2 className="text-3xl font-bold">Tentang CoffeeUhuy</h2>
-          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. At nobis voluptatum ea
-            maiores veniam. Blanditiis quis accusantium sit et harum. Lorem ipsum dolor sit,
-            amet consectetur adipisicing elit. Hic, iusto? Lorem, ipsum dolor sit amet
-            consectetur adipisicing elit. Ab ad amet illum nulla incidunt error dolor est
-            quam deleniti nemo. Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Asperiores, dolorem.
-          </p>
+          <p className="text-gray-700 dark:text-gray-300 leading-relaxed" >
+            Coffee Uhuy hadir untuk menemani setiap momen kamu dengan cita rasa kopi yang nikmat tanpa harus merogoh kocek dalam-dalam. Dengan racikan biji kopi pilihan dan harga yang ramah di kantong. <br />
+            Di setiap cangkirnya, tersimpan semangat kebersamaan, kehangatan, dan keceriaan—karena bagi kami, kopi bukan hanya minuman, tapi juga cara untuk menyapa dan berbagi cerita.
+            <br />
+             <b>Coffee Uhuy, kopi murah dengan rasa yang bersahabat.</b>
+
+                      </p>
 
           {/* Card kelebihan */}
           <div className="grid grid-cols-2 gap-4">
