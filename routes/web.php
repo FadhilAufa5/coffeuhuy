@@ -16,7 +16,8 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('welcome', [
         'products' => Product::latest()->get(), 
-         'events' => Event::latest()->get(), 
+        'events' => Event::latest()->get(),
+        'outlets' => \App\Models\Outlet::latest()->get(),
     ]);
 })->name('home');
 

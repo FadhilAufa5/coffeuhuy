@@ -223,10 +223,12 @@ class KasirController extends Controller
     {
         $request->validate([
             'payment_method' => 'required|string|in:Cash,QRIS,Debit',
+            'bank' => 'nullable|string',
         ]);
 
         $order->update([
             'payment_method' => $request->payment_method,
+            'bank' => $request->payment_method === 'Debit' ? $request->bank : null,
             'status' => 'paid',
         ]);
 

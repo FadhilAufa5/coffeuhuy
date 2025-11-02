@@ -105,101 +105,107 @@ export default function KasirIndex({ products }: { products: Product[] }) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
-      {/* 🔺 Navbar Kasir */}
       <NavbarKasir />
-
       <Toaster position="top-right" />
 
       <div className="flex flex-1 overflow-hidden">
-        {/* 🧾 Daftar Produk */}
-        <div className="flex-1 p-6 overflow-y-auto">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                POS Kopi Uhuy ☕
-              </h1>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                Pilih produk dan tambahkan ke pesanan.
-              </p>
-            </div>
+        {/* Products Section */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header */}
+          <div className="flex-shrink-0 px-6 py-4 bg-white border-b">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                  ☕ Kopi Uhuy POS
+                </h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Pilih produk untuk ditambahkan ke pesanan
+                </p>
+              </div>
 
-            {/* Tombol Cart untuk mobile */}
-            {cart.length > 0 && (
-              <button
-                onClick={() => setShowCart(true)}
-                className="lg:hidden relative bg-red-800 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700 transition"
-              >
-                Cart
-                <span className="absolute -top-2 -right-2 bg-red-600 text-xs px-2 py-1 rounded-full">
-                  {cart.length}
-                </span>
-              </button>
-            )}
-          </div>
-
-          {/* 🧩 Kategori */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                  activeCategory === cat
-                    ? "bg-red-800 text-white shadow-md"
-                    : "bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
-                }`}
-                onClick={() => setActiveCategory(cat)}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          {/* 🧱 Produk Grid */}
-          {productsToDisplay.length === 0 ? (
-            <div className="flex justify-center items-center h-64 text-gray-500">
-              Tidak ada produk di kategori ini.
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-              {productsToDisplay.map((product) => (
-                <div
-                  key={product.id}
-                  className="flex flex-col border rounded-xl bg-white dark:bg-gray-900 overflow-hidden shadow hover:shadow-lg transition-all duration-300"
+              {/* Mobile Cart Button */}
+              {cart.length > 0 && (
+                <button
+                  onClick={() => setShowCart(true)}
+                  className="lg:hidden relative bg-red-800 text-white px-4 py-2.5 rounded-lg shadow-lg hover:bg-red-700 transition flex items-center gap-2"
                 >
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="h-40 w-full object-cover"
-                  />
+                  <span>🛒</span>
+                  <span className="font-semibold">{cart.length}</span>
+                </button>
+              )}
+            </div>
+          </div>
 
-                  <div className="p-3 flex flex-col flex-1">
-                    <h3 className="font-semibold text-gray-800 dark:text-gray-100">
-                      {product.name}
-                    </h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
-                      {product.description}
-                    </p>
-                    <div className="flex justify-between items-center mt-3">
-                      <span className="text-red-800 font-bold text-sm">
-                        {formatRupiah(product.price)}
-                      </span>
-                      <button
-                        onClick={() => addToCart(product)}
-                        className="bg-red-800 text-white px-3 py-1 rounded-lg hover:bg-red-700 shadow-sm transition"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                </div>
+          {/* Categories */}
+          <div className="flex-shrink-0 px-6 py-3 bg-white border-b overflow-x-auto">
+            <div className="flex gap-2">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition ${
+                    activeCategory === cat
+                      ? "bg-red-800 text-white shadow"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                  onClick={() => setActiveCategory(cat)}
+                >
+                  {cat}
+                </button>
               ))}
             </div>
-          )}
+          </div>
+
+          {/* Products Grid - Scrollable */}
+          <div className="flex-1 overflow-y-auto p-6">
+            {productsToDisplay.length === 0 ? (
+              <div className="flex flex-col justify-center items-center h-full text-gray-400">
+                <div className="text-6xl mb-3">📦</div>
+                <p>Tidak ada produk di kategori ini</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {productsToDisplay.map((product) => (
+                  <div
+                    key={product.id}
+                    className="bg-white rounded-lg overflow-hidden border hover:shadow-lg transition group"
+                  >
+                    <div className="relative aspect-square overflow-hidden">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition"
+                      />
+                    </div>
+
+                    <div className="p-3">
+                      <h3 className="font-semibold text-gray-900 text-sm line-clamp-1">
+                        {product.name}
+                      </h3>
+                      <p className="text-xs text-gray-500 line-clamp-1 mb-2">
+                        {product.description}
+                      </p>
+                      <div className="flex justify-between items-center">
+                        <span className="text-red-800 font-bold text-sm">
+                          {formatRupiah(product.price)}
+                        </span>
+                        <button
+                          onClick={() => addToCart(product)}
+                          className="bg-red-800 text-white w-8 h-8 rounded-lg hover:bg-red-700 transition flex items-center justify-center shadow"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* 💳 Cart Desktop */}
+        {/* Desktop Cart Sidebar */}
         {cart.length > 0 && (
-          <div className="hidden lg:flex">
+          <div className="hidden lg:block">
             <Cart
               cart={cart}
               subtotal={subtotal}
@@ -215,9 +221,9 @@ export default function KasirIndex({ products }: { products: Product[] }) {
         )}
       </div>
 
-      {/* 🧾 Drawer Cart Mobile */}
+      {/* Mobile Cart Drawer */}
       {showCart && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex lg:hidden">
+        <div className="fixed inset-0 bg-black/60 z-50 lg:hidden flex justify-end">
           <Cart
             cart={cart}
             subtotal={subtotal}

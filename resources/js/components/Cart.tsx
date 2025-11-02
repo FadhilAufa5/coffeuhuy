@@ -41,8 +41,6 @@ export default function Cart({
   handlePayment,
   onClose,
   isMobile = false,
-
-  // ✅ Props tambahan
   paymentMethod,
   setPaymentMethod,
 }: CartProps) {
@@ -50,106 +48,103 @@ export default function Cart({
     <div
       className={`${
         isMobile
-          ? "w-80 bg-white p-6 flex flex-col h-full"
-          : "w-96 bg-white border-l p-6 flex flex-col shadow-lg"
+          ? "w-full max-w-md bg-white flex flex-col h-full"
+          : "w-96 bg-white border-l flex flex-col h-screen"
       }`}
     >
-      {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-800">Order Summary</h2>
-        {isMobile && (
-          <button
-            onClick={onClose}
-            className="text-gray-600 hover:text-gray-900"
-          >
-            ✕
-          </button>
-        )}
+      {/* Header - Fixed */}
+      <div className="flex-shrink-0 px-6 py-4 border-b bg-white">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-lg font-bold text-gray-800">Order Summary</h2>
+            <p className="text-xs text-gray-500">{cart.length} item{cart.length !== 1 ? 's' : ''}</p>
+          </div>
+          {isMobile && (
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 text-2xl"
+            >
+              ×
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Cart Items */}
       {cart.length === 0 ? (
-        <p className="text-gray-400 text-center mt-20">
-          Belum ada item di keranjang
-        </p>
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="text-center">
+            <div className="text-6xl mb-3">🛒</div>
+            <p className="text-gray-400">Keranjang kosong</p>
+          </div>
+        </div>
       ) : (
         <>
-          <div className="flex-1 overflow-y-auto space-y-4">
-            {cart.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center space-x-3 bg-gray-50 p-2 rounded"
-              >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-14 h-14 rounded object-cover"
-                />
-                <div className="flex-1">
-                  <p className="font-semibold text-gray-700">{item.name}</p>
-                  <p className="text-red-600 text-sm">
-                    {formatRupiah(item.price)}
-                  </p>
+          {/* Cart Items - Scrollable */}
+          <div className="flex-1 overflow-y-auto px-6 py-4">
+            <div className="space-y-3">
+              {cart.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
+                >
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-16 h-16 rounded-lg object-cover"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-gray-800 truncate">{item.name}</p>
+                    <p className="text-red-700 text-sm font-medium">
+                      {formatRupiah(item.price)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => updateQuantity(item.id, -1)}
+                      className="w-7 h-7 flex items-center justify-center bg-white border border-gray-300 rounded hover:bg-gray-50 transition"
+                    >
+                      −
+                    </button>
+                    <span className="w-8 text-center font-medium">{item.quantity}</span>
+                    <button
+                      onClick={() => updateQuantity(item.id, 1)}
+                      className="w-7 h-7 flex items-center justify-center bg-white border border-gray-300 rounded hover:bg-gray-50 transition"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => updateQuantity(item.id, -1)}
-                    className="bg-gray-200 px-2 rounded hover:bg-gray-300"
-                  >
-                    -
-                  </button>
-                  <span className="w-6 text-center">{item.quantity}</span>
-                  <button
-                    onClick={() => updateQuantity(item.id, 1)}
-                    className="bg-gray-200 px-2 rounded hover:bg-gray-300"
-                  >
-                    +
-                  </button>
-                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Footer - Fixed (Totals + Button) */}
+          <div className="flex-shrink-0 px-6 py-4 bg-gray-50 border-t">
+            {/* Totals */}
+            <div className="space-y-2 mb-4">
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>Subtotal</span>
+                <span>{formatRupiah(subtotal)}</span>
               </div>
-            ))}
-          </div>
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>Pajak (11%)</span>
+                <span>{formatRupiah(tax)}</span>
+              </div>
+              <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t">
+                <span>Total</span>
+                <span className="text-red-700">{formatRupiah(total)}</span>
+              </div>
+            </div>
 
-          {/* Payment Method Selector
-          <div className="mt-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Metode Pembayaran
-            </label>
-            <select
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2"
+            {/* Payment Button */}
+            <button
+              onClick={handlePayment}
+              disabled={isProcessing || cart.length === 0}
+              className="w-full bg-red-800 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-3.5 rounded-lg font-semibold transition shadow-lg hover:shadow-xl"
             >
-              <option value="Cash">Cash</option>
-              <option value="Transfer">Transfer</option>
-              <option value="QRIS">QRIS</option>
-            </select>
-          </div> */}
-
-          {/* Totals */}
-          <div className="mt-6 border-t pt-4 space-y-2 text-sm text-gray-700">
-            <div className="flex justify-between">
-              <span>Subtotal</span>
-              <span>{formatRupiah(subtotal)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Pajak (11%)</span>
-              <span>{formatRupiah(tax)}</span>
-            </div>
-            <div className="flex justify-between font-bold text-lg pt-2 border-t">
-              <span>Total</span>
-              <span className="text-red-600">{formatRupiah(total)}</span>
-            </div>
+              {isProcessing ? "Memproses..." : "Bayar Sekarang"}
+            </button>
           </div>
-
-          {/* Payment Button */}
-          <button
-            onClick={handlePayment}
-            disabled={isProcessing || cart.length === 0}
-            className="mt-6 bg-red-800 hover:bg-red-700 text-white py-4 rounded-lg w-full font-semibold text-lg disabled:bg-gray-400"
-          >
-            {isProcessing ? "Processing..." : "Bayar Sekarang"}
-          </button>
         </>
       )}
     </div>

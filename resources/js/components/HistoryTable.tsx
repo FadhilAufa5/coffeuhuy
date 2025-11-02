@@ -1,13 +1,12 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Printer } from "lucide-react";
+import { formatRupiah } from "@/lib/utils";
 
 interface OrderItem {
-  name: string;
+  id: number;
+  product_name: string;
   quantity: number;
   price: number;
-  subtotal?: number;
+  product_image?: string;
 }
 
 interface Order {
@@ -16,6 +15,7 @@ interface Order {
   total: number;
   status: string;
   payment_method: string;
+  bank?: string;
   created_at: string;
   items: OrderItem[];
 }
@@ -24,104 +24,96 @@ interface Props {
   orders: Order[];
 }
 
-const getStatusLabel = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "paid":
-      return { label: "Lunas", color: "bg-green-100 text-green-700" };
-    case "accepted":
-      return { label: "Selesai", color: "bg-blue-100 text-blue-700" };
-    case "pending":
-      return { label: "Belum Dibayar", color: "bg-yellow-100 text-yellow-700" };
-    case "rejected":
-    case "cancelled":
-      return { label: "Dibatalkan", color: "bg-red-100 text-red-700" };
-    default:
-      return { label: status, color: "bg-gray-100 text-gray-700" };
-  }
+const getStatusBadge = (status: string) => {
+  const styles = {
+    paid: "bg-green-50 text-green-700 border-green-200",
+    accepted: "bg-blue-50 text-blue-700 border-blue-200",
+    pending: "bg-yellow-50 text-yellow-700 border-yellow-200",
+  }[status.toLowerCase()] || "bg-gray-50 text-gray-700 border-gray-200";
+
+  const labels = {
+    paid: "Lunas",
+    accepted: "Selesai",
+    pending: "Pending",
+  }[status.toLowerCase()] || status;
+
+  return { styles, labels };
 };
 
 export default function HistoryTable({ orders }: Props) {
   if (orders.length === 0) {
     return (
-      <div className="text-center py-16 bg-white rounded-lg shadow-sm">
-        <h3 className="text-xl font-semibold text-gray-700">Tidak Ada Transaksi</h3>
-        <p className="text-gray-500 mt-2">Coba ubah filter atau rentang tanggal Anda.</p>
+      <div className="text-center py-12 bg-white rounded-lg border">
+        <p className="text-gray-500">Tidak ada transaksi</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {orders.map((order) => {
-        const status = getStatusLabel(order.status);
+        const { styles, labels } = getStatusBadge(order.status);
+        const paymentInfo = order.payment_method === "Debit" && order.bank
+          ? `${order.payment_method} - ${order.bank}`
+          : order.payment_method || "-";
 
         return (
-          <Card key={order.id} className="shadow-sm hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row justify-between items-start pb-2">
+          <div key={order.id} className="bg-white border rounded-lg p-4 hover:shadow-md transition">
+            {/* Header */}
+            <div className="flex justify-between items-start mb-3">
               <div>
-                <CardTitle className="text-base font-bold text-blue-600">
-                  {order.invoice_number}
-                </CardTitle>
+                <h3 className="font-semibold text-gray-900">{order.invoice_number}</h3>
                 <p className="text-xs text-gray-500">
                   {new Date(order.created_at).toLocaleString("id-ID", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
                   })}
                 </p>
               </div>
-
-              <span
-                className={`px-3 py-1 text-xs font-semibold rounded-full ${status.color}`}
-              >
-                {status.label}
+              <span className={`px-2 py-1 text-xs font-medium rounded border ${styles}`}>
+                {labels}
               </span>
-            </CardHeader>
+            </div>
 
-            <CardContent>
-              {/* Items */}
-              <div className="border-t border-b divide-y my-3">
-                {order.items.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="flex justify-between items-center py-2 text-sm"
-                  >
-                    <div>
-                      <p className="font-medium text-gray-800">{item.name}</p>
-                      <p className="text-gray-500">
-                        {item.quantity} x Rp {item.price.toLocaleString("id-ID")}
-                      </p>
+            {/* Items Summary */}
+            <div className="space-y-2 mb-3">
+              {order.items && order.items.length > 0 ? (
+                order.items.map((item) => (
+                  <div key={item.id} className="flex justify-between items-center text-sm">
+                    <div className="flex items-center gap-2">
+                      {item.product_image && (
+                        <img 
+                          src={item.product_image} 
+                          alt={item.product_name}
+                          className="w-10 h-10 rounded object-cover"
+                        />
+                      )}
+                      <div>
+                        <p className="text-gray-900 font-medium">{item.product_name}</p>
+                        <p className="text-xs text-gray-500">
+                          {item.quantity}x @ {formatRupiah(item.price)}
+                        </p>
+                      </div>
                     </div>
-                    <p className="font-semibold text-gray-900">
-                      Rp {(item.subtotal ?? item.price * item.quantity).toLocaleString("id-ID")}
-                    </p>
+                    <span className="text-gray-900 font-semibold">
+                      {formatRupiah(item.price * item.quantity)}
+                    </span>
                   </div>
-                ))}
-              </div>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">Tidak ada item</p>
+              )}
+            </div>
 
-              {/* Ringkasan */}
-              <div className="flex justify-between items-center mt-3">
-                <span className="text-sm text-gray-600">
-                  Metode Pembayaran:{" "}
-                  <span className="font-semibold capitalize">
-                    {order.payment_method || "N/A"}
-                  </span>
-                </span>
-                <div className="text-right">
-                  <span className="text-sm text-gray-600">Total</span>
-                  <p className="font-bold text-lg text-gray-900">
-                    Rp {order.total.toLocaleString("id-ID")}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-
-            <CardFooter className="bg-gray-50 flex justify-end">
-              <Button variant="outline" size="sm">
-                <Printer className="mr-2 h-4 w-4" />
-                Cetak Struk
-              </Button>
-            </CardFooter>
-          </Card>
+            {/* Footer */}
+            <div className="flex justify-between items-center pt-3 border-t">
+              <span className="text-xs text-gray-500">{paymentInfo}</span>
+              <span className="font-bold text-gray-900">{formatRupiah(order.total)}</span>
+            </div>
+          </div>
         );
       })}
     </div>
