@@ -7,6 +7,7 @@ interface Order {
   id: number;
   total: number;
   payment_method?: string;
+  buyer_name?: string;
   status: string;
 }
 
@@ -105,6 +106,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
               <thead>
                 <tr className="border-b dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400">
                   <th className="py-3 px-4">#</th>
+                  <th className="py-3 px-4">Pembeli</th>
                   <th className="py-3 px-4">Total</th>
                   <th className="py-3 px-4">Metode</th>
                   <th className="py-3 px-4">Status</th>
@@ -119,6 +121,9 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                       className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition"
                     >
                       <td className="py-3 px-4">{startIndex + idx + 1}</td>
+                      <td className="py-3 px-4 font-medium text-gray-900 dark:text-white">
+                        {order.buyer_name || '-'}
+                      </td>
                       <td className="py-3 px-4">Rp {Number(order.total).toLocaleString()}</td>
                       <td className="py-3 px-4">{order.payment_method || '-'}</td>
                       <td className="py-3 px-4 capitalize">{order.status}</td>
@@ -135,7 +140,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({
                 ) : (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={6}
                       className="py-5 text-center text-gray-500 dark:text-gray-400 text-sm"
                     >
                       Tidak ada pesanan untuk dikonfirmasi.

@@ -19,6 +19,7 @@ class Order extends Model
     'status',
     'payment_method',
     'bank',
+    'buyer_name',
     'confirmed',
 ];
   

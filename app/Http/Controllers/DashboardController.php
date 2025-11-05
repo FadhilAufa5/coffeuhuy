@@ -33,7 +33,7 @@ class DashboardController extends Controller
 
             
             'orders' => Order::orderBy('id', 'asc')
-                ->get(['id', 'total', 'status', 'payment_method']),
+                ->get(['id', 'total', 'status', 'payment_method', 'buyer_name']),
         ]);
     }
 }

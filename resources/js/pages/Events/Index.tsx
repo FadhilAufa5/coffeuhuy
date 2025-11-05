@@ -90,13 +90,19 @@ export default function CreateEvent({ events, flash }: { events: Event[]; flash?
 
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Tambah Event Baru</h1>
+          
+          <h1 className="text-3xl font-bold">Tambah Event Baru
+            <p className="text-sm text-gray-600 dark:text-gray-400 py-2 px-1">Tambahkan event baru di Coffee Uhuy agar sobat uhuy terhibur </p>
+          </h1>
+
+          
           <Button
             onClick={() => setShowCreateModal(true)}
             className="flex items-center gap-2 bg-black text-white hover:bg-gray-700"
           >
             <Plus className="h-5 w-5" /> Tambah Event
           </Button>
+          
         </div>
 
         {/* Event Table */}

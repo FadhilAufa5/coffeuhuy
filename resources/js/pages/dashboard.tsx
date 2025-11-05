@@ -91,53 +91,60 @@ export default function Dashboard() {
   return (
     <AppLayout breadcrumbs={[{ title: 'Dashboard', href: '/dashboard' }]}>
       <Head title="Dashboard" />
-      <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-10">
+      <div className="p-6 space-y-8">
         {/* HEADER & Notifikasi */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
-              Ringkasan performa dan aktivitas toko Anda hari ini.
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              Ringkasan performa dan aktivitas toko Anda hari ini
             </p>
           </div>
 
           <div className="relative">
             <button
               onClick={() => setOpen(!open)}
-              className="p-3 rounded-full bg-white dark:bg-gray-800 border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+              className="relative p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
-              <Bell className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+              <Bell className="w-5 h-5 text-gray-700 dark:text-gray-300" />
               {notifications.length > 0 && (
-                <span className="absolute top-1 right-1 block w-3 h-3 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-900" />
+                <span className="absolute -top-1 -right-1 flex h-5 w-5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 items-center justify-center text-[10px] text-white font-semibold">
+                    {notifications.length}
+                  </span>
+                </span>
               )}
             </button>
 
             {open && (
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="absolute right-0 mt-3 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50"
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 overflow-hidden"
               >
-                <div className="p-3 border-b text-sm font-semibold text-gray-800 dark:text-gray-200">
-                  Notifikasi
+                <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Notifikasi</h3>
                 </div>
-                <ul className="max-h-72 overflow-y-auto">
+                <ul className="max-h-80 overflow-y-auto">
                   {notifications.length > 0 ? (
                     notifications.map((n, idx) => (
                       <li
                         key={idx}
-                        className="flex items-start gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
+                        className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700 last:border-0"
                       >
-                        {n.type === 'warning' ? (
-                          <AlertTriangle className="w-5 h-5 text-yellow-500 mt-1" />
-                        ) : (
-                          <Calendar className="w-5 h-5 text-blue-500 mt-1" />
-                        )}
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{n.message}</span>
+                        <div className={`p-1.5 rounded-md ${n.type === 'warning' ? 'bg-yellow-100 dark:bg-yellow-900/30' : 'bg-blue-100 dark:bg-blue-900/30'}`}>
+                          {n.type === 'warning' ? (
+                            <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+                          ) : (
+                            <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                          )}
+                        </div>
+                        <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{n.message}</span>
                       </li>
                     ))
                   ) : (
-                    <li className="p-4 text-center text-gray-500 dark:text-gray-400 text-sm">
+                    <li className="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
                       Tidak ada notifikasi baru
                     </li>
                   )}
@@ -148,31 +155,44 @@ export default function Dashboard() {
         </div>
 
         {/* GRID STATISTIK */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {statCards.map((card, idx) => (
             <motion.div
               key={idx}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
+              transition={{ duration: 0.3, delay: idx * 0.1 }}
             >
-              <Card className="p-6 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-2xl shadow-md hover:shadow-lg transition">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">{card.label}</p>
-                    <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white mt-1">{card.value}</h3>
-                  </div>
-                  <div className={`p-4 rounded-xl ${card.bg}`}>
-                    <card.icon className={`w-6 h-6  ${card.color}`} />
+              <Card className="relative overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
+                <div className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-2 flex-1">
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        {card.label}
+                      </p>
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {card.value}
+                      </h3>
+                    </div>
+                    <div className={`p-3 rounded-lg ${card.bg} group-hover:scale-110 transition-transform duration-300`}>
+                      <card.icon className={`w-6 h-6 ${card.color}`} />
+                    </div>
                   </div>
                 </div>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               </Card>
             </motion.div>
           ))}
         </div>
 
-        {/* TABEL PESANAN DENGAN PAGINATION */}
-        <OrdersTable orders={orders} handleConfirm={handleConfirm} itemsPerPage={5} />
+        {/* TABEL PESANAN */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+        >
+          <OrdersTable orders={orders} handleConfirm={handleConfirm} itemsPerPage={5} />
+        </motion.div>
       </div>
     </AppLayout>
   );

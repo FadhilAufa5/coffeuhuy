@@ -16,6 +16,7 @@ interface Order {
   status: string;
   payment_method: string;
   bank?: string;
+  buyer_name?: string;
   created_at: string;
   items: OrderItem[];
 }
@@ -43,8 +44,8 @@ const getStatusBadge = (status: string) => {
 export default function HistoryTable({ orders }: Props) {
   if (orders.length === 0) {
     return (
-      <div className="text-center py-12 bg-white rounded-lg border">
-        <p className="text-gray-500">Tidak ada transaksi</p>
+      <div className="text-center py-12 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800">
+        <p className="text-gray-500 dark:text-gray-400">Tidak ada transaksi</p>
       </div>
     );
   }
@@ -58,12 +59,18 @@ export default function HistoryTable({ orders }: Props) {
           : order.payment_method || "-";
 
         return (
-          <div key={order.id} className="bg-white border rounded-lg p-4 hover:shadow-md transition">
+          <div key={order.id} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-4 hover:shadow-md transition">
             {/* Header */}
             <div className="flex justify-between items-start mb-3">
-              <div>
-                <h3 className="font-semibold text-gray-900">{order.invoice_number}</h3>
-                <p className="text-xs text-gray-500">
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-900 dark:text-white">{order.invoice_number}</h3>
+                {order.buyer_name && (
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-0.5 flex items-center gap-1">
+                    <span className="text-gray-500 dark:text-gray-400">👤</span>
+                    {order.buyer_name}
+                  </p>
+                )}
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {new Date(order.created_at).toLocaleString("id-ID", {
                     day: "2-digit",
                     month: "short",
@@ -88,30 +95,40 @@ export default function HistoryTable({ orders }: Props) {
                         <img 
                           src={item.product_image} 
                           alt={item.product_name}
-                          className="w-10 h-10 rounded object-cover"
+                          className="w-10 h-10 rounded-lg object-cover"
                         />
                       )}
                       <div>
-                        <p className="text-gray-900 font-medium">{item.product_name}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-gray-900 dark:text-white font-medium">{item.product_name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           {item.quantity}x @ {formatRupiah(item.price)}
                         </p>
                       </div>
                     </div>
-                    <span className="text-gray-900 font-semibold">
+                    <span className="text-gray-900 dark:text-white font-semibold">
                       {formatRupiah(item.price * item.quantity)}
                     </span>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-gray-500">Tidak ada item</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Tidak ada item</p>
               )}
             </div>
 
             {/* Footer */}
-            <div className="flex justify-between items-center pt-3 border-t">
-              <span className="text-xs text-gray-500">{paymentInfo}</span>
-              <span className="font-bold text-gray-900">{formatRupiah(order.total)}</span>
+            <div className="pt-3 border-t border-gray-200 dark:border-gray-800 space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-500 dark:text-gray-400">{paymentInfo}</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">Subtotal: {formatRupiah(order.total)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-500 dark:text-gray-400">PPN (11%)</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">{formatRupiah(order.total * 0.11)}</span>
+              </div>
+              <div className="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-800">
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">Total</span>
+                <span className="font-bold text-lg text-gray-900 dark:text-white">{formatRupiah(order.total * 1.11)}</span>
+              </div>
             </div>
           </div>
         );

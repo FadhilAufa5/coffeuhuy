@@ -44,9 +44,12 @@ class KasirController extends Controller
 
     // 🧮 Query dasar orders
     $orders = Order::with('items')
-        // 🔍 Cari berdasarkan invoice_number
+        // 🔍 Cari berdasarkan invoice_number atau buyer_name
         ->when($request->filled('search'), function ($query) use ($request) {
-            $query->where('invoice_number', 'like', "%{$request->search}%");
+            $query->where(function ($q) use ($request) {
+                $q->where('invoice_number', 'like', "%{$request->search}%")
+                  ->orWhere('buyer_name', 'like', "%{$request->search}%");
+            });
         })
 
         // 📅 Filter tanggal (dari - sampai)
@@ -147,8 +150,15 @@ class KasirController extends Controller
             'sales_chart' => $sales_chart,
         ];
 
+        // 📦 Ambil orders yang perlu konfirmasi (status paid)
+        $orders = Order::where('status', 'paid')
+            ->select('id', 'total', 'payment_method', 'buyer_name', 'status')
+            ->latest()
+            ->get();
+
         return Inertia::render('Kasir/AdminKasir', [
             'data' => $data,
+            'orders' => $orders,
             'filters' => [
                 'from' => $from->toDateString(),
                 'to' => $to->toDateString(),
@@ -167,6 +177,7 @@ class KasirController extends Controller
             'items.*.product_id' => 'required|integer|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
             'total' => 'required|numeric|min:0',
+            'buyer_name' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -181,6 +192,7 @@ class KasirController extends Controller
                 'total' => $request->total,
                 'status' => 'pending',
                 'payment_method' => null,
+                'buyer_name' => $request->buyer_name,
             ]);
 
             foreach ($request->items as $item) {
