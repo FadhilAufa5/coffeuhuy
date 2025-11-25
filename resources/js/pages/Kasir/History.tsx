@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Head, usePage, router } from "@inertiajs/react";
+import { motion } from "framer-motion";
 
 // 🧩 UI Components
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -12,9 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 
 // 🧭 Icons & Layout
-import { Search } from "lucide-react";
+import { Search, Filter, Calendar, RefreshCcw, ChevronLeft, ChevronRight } from "lucide-react";
 import NavbarKasir from "@/components/NavbarKasir";
 
 // 📦 Custom Components
@@ -122,154 +124,207 @@ export default function History() {
     });
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
+    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950">
       <NavbarKasir />
       <Head title="Riwayat Kasir" />
 
-      <main className="flex-1 p-4 md:p-6 space-y-4">
-        <header>
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-            Riwayat Transaksi
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Lihat semua transaksi yang telah dilakukan
-            <span className="ml-2 font-medium text-gray-700 dark:text-gray-300">
-              ({orders.total} transaksi)
+      <motion.main 
+        className="container mx-auto p-4 md:p-6 space-y-6 max-w-5xl"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+              Riwayat Transaksi
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Kelola dan pantau semua transaksi penjualan Anda.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 bg-white dark:bg-gray-900 p-1.5 rounded-lg border shadow-sm">
+            <span className="text-xs font-medium px-2 text-muted-foreground">Total Transaksi:</span>
+            <span className="text-sm font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-md">
+                {orders.total}
             </span>
-          </p>
-        </header>
+          </div>
+        </motion.div>
 
         {/* Filter Section */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
-                <Input
-                  type="text"
-                  placeholder="Cari invoice atau nama pembeli..."
-                  value={filters.search}
-                  onChange={(e) => handleFilterChange("search", e.target.value)}
-                  onKeyDown={handleSearchKeyDown}
-                  className="pl-9"
-                />
-              </div>
+        <motion.div variants={itemVariants}>
+          <Card className="border-none shadow-sm bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+            <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <Filter className="w-4 h-4 text-primary" />
+                        <CardTitle className="text-base">Filter & Pencarian</CardTitle>
+                    </div>
+                    {(filters.search || filters.status !== 'all' || filters.payment_method !== 'all' || filters.from || filters.to) && (
+                        <Button variant="ghost" size="sm" onClick={resetFilters} className="h-8 text-xs text-muted-foreground hover:text-destructive">
+                            <RefreshCcw className="w-3 h-3 mr-1.5" />
+                            Reset Filter
+                        </Button>
+                    )}
+                </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                {/* Search */}
+                <div className="md:col-span-4 relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Cari invoice / nama..."
+                    value={filters.search}
+                    onChange={(e) => handleFilterChange("search", e.target.value)}
+                    onKeyDown={handleSearchKeyDown}
+                    className="pl-9"
+                  />
+                </div>
 
-              {/* Status */}
-              <Select
-                value={filters.status}
-                onValueChange={(value) => handleFilterChange("status", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Pilih Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua Status</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="paid">Lunas</SelectItem>
-                  <SelectItem value="accepted">Selesai</SelectItem>
-                </SelectContent>
-              </Select>
+                {/* Status */}
+                <div className="md:col-span-2">
+                    <Select
+                        value={filters.status}
+                        onValueChange={(value) => handleFilterChange("status", value)}
+                    >
+                        <SelectTrigger>
+                        <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                        <SelectItem value="all">Semua Status</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="paid">Lunas</SelectItem>
+                        <SelectItem value="accepted">Selesai</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
 
-              {/* Payment Method */}
-              <Select
-                value={filters.payment_method}
-                onValueChange={(value) => handleFilterChange("payment_method", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Pilih Metode" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua Metode</SelectItem>
-                  <SelectItem value="Cash">Cash</SelectItem>
-                  <SelectItem value="QRIS">QRIS</SelectItem>
-                  <SelectItem value="Debit">Debit</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                {/* Payment Method */}
+                <div className="md:col-span-2">
+                    <Select
+                        value={filters.payment_method}
+                        onValueChange={(value) => handleFilterChange("payment_method", value)}
+                    >
+                        <SelectTrigger>
+                        <SelectValue placeholder="Metode" />
+                        </SelectTrigger>
+                        <SelectContent>
+                        <SelectItem value="all">Semua Metode</SelectItem>
+                        <SelectItem value="Cash">Cash</SelectItem>
+                        <SelectItem value="QRIS">QRIS</SelectItem>
+                        <SelectItem value="Debit">Debit</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
 
-            {/* Date Range */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mt-3">
-              <div className="flex items-center gap-2 w-full sm:w-auto flex-1">
-                <Input
-                  type="date"
-                  value={filters.from}
-                  onChange={(e) => handleFilterChange("from", e.target.value)}
-                  className="text-sm"
-                  placeholder="Dari tanggal"
-                />
-                <span className="text-gray-400 dark:text-gray-500">—</span>
-                <Input
-                  type="date"
-                  value={filters.to}
-                  onChange={(e) => handleFilterChange("to", e.target.value)}
-                  className="text-sm"
-                  placeholder="Sampai tanggal"
-                />
-              </div>
-              <div className="flex gap-2 w-full sm:w-auto">
-                <Button 
-                  onClick={applyFilters} 
-                  size="sm" 
-                  className="flex-1 sm:flex-none bg-red-800 hover:bg-red-700"
-                >
-                  Terapkan Filter
-                </Button>
-                <Button 
-                  onClick={resetFilters} 
-                  size="sm" 
-                  variant="outline"
-                  className="flex-1 sm:flex-none"
-                >
-                  Reset
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <HistoryTable orders={orders.data} />
-
-        {/* Pagination */}
-        {orders.last_page > 1 && (
-          <Card>
-            <CardContent className="py-4">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Menampilkan halaman {orders.current_page} dari {orders.last_page}
-                  <span className="ml-2">
-                    (Total: {orders.total} transaksi)
-                  </span>
-                </p>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {orders.links.map((link, index) => {
-                    if (!link.url) return null;
-                    
-                    const isPrev = link.label.includes('Previous');
-                    const isNext = link.label.includes('Next');
-                    const label = isPrev ? '← Prev' : isNext ? 'Next →' : link.label;
-
-                    return (
-                      <Button
-                        key={index}
-                        onClick={() => handlePageChange(link.url!)}
-                        variant={link.active ? "default" : "outline"}
-                        size="sm"
-                        disabled={!link.url}
-                        className={link.active ? "bg-red-800 hover:bg-red-700" : ""}
-                      >
-                        {label}
-                      </Button>
-                    );
-                  })}
+                {/* Date Range */}
+                <div className="md:col-span-4 flex gap-2">
+                    <div className="relative flex-1">
+                        <Input
+                            type="date"
+                            value={filters.from}
+                            onChange={(e) => handleFilterChange("from", e.target.value)}
+                            className="text-xs"
+                        />
+                    </div>
+                    <div className="relative flex-1">
+                        <Input
+                            type="date"
+                            value={filters.to}
+                            onChange={(e) => handleFilterChange("to", e.target.value)}
+                            className="text-xs"
+                        />
+                    </div>
+                    <Button onClick={applyFilters} size="icon" className="shrink-0">
+                        <Search className="w-4 h-4" />
+                    </Button>
                 </div>
               </div>
             </CardContent>
           </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+            <HistoryTable orders={orders.data} />
+        </motion.div>
+
+        {/* Pagination */}
+        {orders.last_page > 1 && (
+          <motion.div variants={itemVariants} className="flex justify-center py-4">
+            <div className="flex items-center gap-2 bg-white dark:bg-gray-900 p-2 rounded-lg shadow-sm border">
+                {orders.links.map((link, index) => {
+                    if (!link.url && !link.label.includes('Previous') && !link.label.includes('Next')) return null;
+                    
+                    const isPrev = link.label.includes('Previous');
+                    const isNext = link.label.includes('Next');
+                    
+                    if (isPrev) {
+                        return (
+                            <Button
+                                key={index}
+                                variant="outline"
+                                size="icon"
+                                onClick={() => link.url && handlePageChange(link.url)}
+                                disabled={!link.url}
+                                className="w-8 h-8"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                            </Button>
+                        );
+                    }
+                    
+                    if (isNext) {
+                        return (
+                            <Button
+                                key={index}
+                                variant="outline"
+                                size="icon"
+                                onClick={() => link.url && handlePageChange(link.url)}
+                                disabled={!link.url}
+                                className="w-8 h-8"
+                            >
+                                <ChevronRight className="w-4 h-4" />
+                            </Button>
+                        );
+                    }
+
+                    return (
+                        <Button
+                            key={index}
+                            variant={link.active ? "default" : "ghost"}
+                            size="sm"
+                            onClick={() => link.url && handlePageChange(link.url)}
+                            className={`w-8 h-8 p-0 ${link.active ? 'bg-primary text-primary-foreground' : ''}`}
+                        >
+                            <span dangerouslySetInnerHTML={{ __html: link.label }} />
+                        </Button>
+                    );
+                })}
+            </div>
+          </motion.div>
         )}
-      </main>
+      </motion.main>
     </div>
   );
 }

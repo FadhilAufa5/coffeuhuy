@@ -11,12 +11,16 @@ import {
     Cell,
 } from "recharts";
 import { formatRupiah } from "@/lib/utils";
-import { TrendingUp, ShoppingBag, CreditCard, Filter } from "lucide-react";
+import { TrendingUp, ShoppingBag, CreditCard, Filter, Calendar, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import NavbarKasir from "@/components/NavbarKasir";
 import { OrdersTable } from "@/components/OrdersTable";
 import { useState } from "react";
+import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 interface DashboardData {
     total_sales: number;
@@ -42,7 +46,6 @@ interface Props {
 
 const COLORS = ["#991B1B", "#DC2626", "#EF4444", "#F87171", "#FCA5A5", "#FECACA"];
 
-
 export default function AdminKasir({ data, orders: initialOrders, filters }: Props) {
     const [from, setFrom] = useState(filters.from || "");
     const [to, setTo] = useState(filters.to || "");
@@ -54,22 +57,25 @@ export default function AdminKasir({ data, orders: initialOrders, filters }: Pro
             title: "Total Penjualan",
             value: formatRupiah(data.total_sales),
             icon: CreditCard,
-            color: "text-red-600 dark:text-red-400",
-            bg: "bg-red-50 dark:bg-red-900/20",
+            description: "Total pendapatan kotor",
+            color: "text-emerald-600",
+            bg: "bg-emerald-100/50 dark:bg-emerald-900/20",
         },
         {
             title: "Produk Terjual",
             value: data.total_items_sold,
             icon: ShoppingBag,
-            color: "text-red-700 dark:text-red-500",
-            bg: "bg-red-100 dark:bg-red-900/30",
+            description: "Item berhasil terjual",
+            color: "text-blue-600",
+            bg: "bg-blue-100/50 dark:bg-blue-900/20",
         },
         {
             title: "Total Transaksi",
             value: data.total_transactions,
             icon: TrendingUp,
-            color: "text-red-800 dark:text-red-600",
-            bg: "bg-red-200 dark:bg-red-900/40",
+            description: "Transaksi berhasil",
+            color: "text-violet-600",
+            bg: "bg-violet-100/50 dark:bg-violet-900/20",
         },
     ];
 
@@ -94,214 +100,274 @@ export default function AdminKasir({ data, orders: initialOrders, filters }: Pro
         });
     };
 
-    // 🔔 Toast notification
-    const showToast = (message: string, type: 'success' | 'error' = 'success') => {
-        const toast = document.createElement('div');
-        toast.textContent = message;
-        toast.className = `
-            fixed bottom-6 right-6 px-5 py-3 rounded-lg text-white text-sm font-semibold shadow-xl z-50 
-            transition-all duration-500 transform
-            ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}
-        `;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-    };
-
     const handleConfirm = (orderId: number) => {
         router.post(`/kasir/${orderId}/accept`, {}, {
             onSuccess: () => {
                 setOrders((prev) => prev.filter((o) => o.id !== orderId));
-                showToast('✅ Pesanan telah dikonfirmasi!', 'success');
+                toast.success("Pesanan telah dikonfirmasi!");
             },
             onError: () => {
-                showToast('❌ Gagal mengonfirmasi pesanan.', 'error');
+                toast.error("Gagal mengonfirmasi pesanan.");
             },
         });
     };
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: {
+            y: 0,
+            opacity: 1
+        }
+    };
+
     return (
-        <>
+        <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950">
             <Head title="Dashboard Kasir" />
             <NavbarKasir />
-            <div className="p-6 space-y-6">
+            
+            <motion.div 
+                className="container mx-auto p-6 space-y-8 max-w-7xl"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+            >
                 {/* Header */}
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard Kasir</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Analisis penjualan berdasarkan periode waktu
-                    </p>
-                </div>
+                <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard Overview</h1>
+                        <p className="text-muted-foreground mt-1">
+                            Pantau performa penjualan dan transaksi toko Anda.
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
+                            <RefreshCcw className="w-4 h-4 mr-2" />
+                            Refresh Data
+                        </Button>
+                    </div>
+                </motion.div>
 
                 {/* Filter Section */}
-                <Card className="p-5">
-                    <div className="flex items-center gap-2 mb-4">
-                        <Filter className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                        <h2 className="font-semibold text-gray-900 dark:text-white">Filter Data</h2>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div>
-                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">
-                                Dari Tanggal
-                            </label>
-                            <input 
-                                type="date" 
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
-                                value={from} 
-                                onChange={(e) => setFrom(e.target.value)} 
-                            />
-                        </div>
-                        
-                        <div>
-                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">
-                                Sampai Tanggal
-                            </label>
-                            <input 
-                                type="date" 
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
-                                value={to} 
-                                onChange={(e) => setTo(e.target.value)} 
-                            />
-                        </div>
-                        
-                        <div>
-                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">
-                                Periode
-                            </label>
-                            <select 
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
-                                value={period} 
-                                onChange={(e) => setPeriod(e.target.value)}
-                            >
-                                <option value="day">Harian</option>
-                                <option value="month">Bulanan</option>
-                                <option value="year">Tahunan</option>
-                            </select>
-                        </div>
-                        
-                        <div className="flex gap-2 items-end">
-                            <Button 
-                                onClick={applyFilter} 
-                                className="flex-1 bg-red-800 hover:bg-red-900 text-white"
-                            >
-                                Terapkan
-                            </Button>
-                            <Button 
-                                onClick={resetFilter} 
-                                variant="outline"
-                                className="px-3"
-                            >
-                                Reset
-                            </Button>
-                        </div>
-                    </div>
-                </Card>
-
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    {stats.map((stat, idx) => (
-                        <Card key={idx} className="p-6 hover:shadow-lg transition-shadow">
-                            <div className="flex items-start justify-between">
-                                <div className="space-y-2 flex-1">
-                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                        {stat.title}
-                                    </p>
-                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                        {stat.value}
-                                    </h3>
+                <motion.div variants={itemVariants}>
+                    <Card className="border-none shadow-sm bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
+                        <CardHeader className="pb-4">
+                            <div className="flex items-center gap-2">
+                                <Filter className="w-5 h-5 text-primary" />
+                                <CardTitle className="text-lg">Filter Data</CardTitle>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                        Dari Tanggal
+                                    </label>
+                                    <div className="relative">
+                                        <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                                        <Input 
+                                            type="date" 
+                                            className="pl-9"
+                                            value={from} 
+                                            onChange={(e) => setFrom(e.target.value)} 
+                                        />
+                                    </div>
                                 </div>
-                                <div className={`p-3 rounded-lg ${stat.bg}`}>
-                                    <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                                
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                        Sampai Tanggal
+                                    </label>
+                                    <div className="relative">
+                                        <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                                        <Input 
+                                            type="date" 
+                                            className="pl-9"
+                                            value={to} 
+                                            onChange={(e) => setTo(e.target.value)} 
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                        Periode
+                                    </label>
+                                    <Select value={period} onValueChange={setPeriod}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Pilih Periode" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="day">Harian</SelectItem>
+                                            <SelectItem value="month">Bulanan</SelectItem>
+                                            <SelectItem value="year">Tahunan</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                
+                                <div className="flex gap-2 items-end">
+                                    <Button 
+                                        onClick={applyFilter} 
+                                        className="flex-1 bg-primary hover:bg-primary/90"
+                                    >
+                                        Terapkan
+                                    </Button>
+                                    <Button 
+                                        onClick={resetFilter} 
+                                        variant="outline"
+                                        className="px-4"
+                                    >
+                                        Reset
+                                    </Button>
                                 </div>
                             </div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+
+                {/* Stats Cards */}
+                <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {stats.map((stat, idx) => (
+                        <Card key={idx} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all duration-300">
+                            <CardContent className="p-6">
+                                <div className="flex items-center justify-between">
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-medium text-muted-foreground">
+                                            {stat.title}
+                                        </p>
+                                        <h3 className="text-2xl font-bold tracking-tight">
+                                            {stat.value}
+                                        </h3>
+                                        <p className="text-xs text-muted-foreground">
+                                            {stat.description}
+                                        </p>
+                                    </div>
+                                    <div className={`p-3 rounded-xl ${stat.bg}`}>
+                                        <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                                    </div>
+                                </div>
+                            </CardContent>
                         </Card>
                     ))}
-                </div>
+                </motion.div>
 
                 {/* Charts */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <Card className="p-6">
-                        <h2 className="font-semibold text-gray-900 dark:text-white mb-4">
-                            Grafik Pendapatan
-                        </h2>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <AreaChart data={data.sales_chart}>
-                                <defs>
-                                    <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#991B1B" stopOpacity={0.3}/>
-                                        <stop offset="95%" stopColor="#991B1B" stopOpacity={0}/>
-                                    </linearGradient>
-                                </defs>
-                                <XAxis 
-                                    dataKey="date" 
-                                    stroke="#9CA3AF" 
-                                    fontSize={12}
-                                    tickLine={false}
-                                />
-                                <YAxis 
-                                    stroke="#9CA3AF" 
-                                    fontSize={12}
-                                    tickLine={false}
-                                    tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-                                />
-                                <Tooltip 
-                                    contentStyle={{
-                                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                        border: '1px solid #E5E7EB',
-                                        borderRadius: '8px',
-                                        padding: '8px 12px'
-                                    }}
-                                    formatter={(value: number) => [formatRupiah(value), 'Pendapatan']}
-                                />
-                                <Area 
-                                    type="monotone" 
-                                    dataKey="total" 
-                                    stroke="#991B1B" 
-                                    strokeWidth={2}
-                                    fill="url(#colorTotal)" 
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <Card className="border-none shadow-sm">
+                        <CardHeader>
+                            <CardTitle>Grafik Pendapatan</CardTitle>
+                            <CardDescription>Tren pendapatan seiring waktu</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-[300px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={data.sales_chart}>
+                                        <defs>
+                                            <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#991B1B" stopOpacity={0.3}/>
+                                                <stop offset="95%" stopColor="#991B1B" stopOpacity={0}/>
+                                            </linearGradient>
+                                        </defs>
+                                        <XAxis 
+                                            dataKey="date" 
+                                            stroke="#888888" 
+                                            fontSize={12}
+                                            tickLine={false}
+                                            axisLine={false}
+                                        />
+                                        <YAxis 
+                                            stroke="#888888" 
+                                            fontSize={12}
+                                            tickLine={false}
+                                            axisLine={false}
+                                            tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+                                        />
+                                        <Tooltip 
+                                            contentStyle={{
+                                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                                border: '1px solid #e5e7eb',
+                                                borderRadius: '8px',
+                                                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                                padding: '8px 12px'
+                                            }}
+                                            formatter={(value: number) => [formatRupiah(value), 'Pendapatan']}
+                                        />
+                                        <Area 
+                                            type="monotone" 
+                                            dataKey="total" 
+                                            stroke="#991B1B" 
+                                            strokeWidth={2}
+                                            fill="url(#colorTotal)" 
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </CardContent>
                     </Card>
 
-                    <Card className="p-6">
-                        <h2 className="font-semibold text-gray-900 dark:text-white mb-4">
-                            Produk Paling Laris
-                        </h2>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <PieChart>
-                                <Pie
-                                    data={data.product_sales}
-                                    dataKey="revenue"
-                                    nameKey="product"
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={50}
-                                    outerRadius={90}
-                                    paddingAngle={2}
-                                    label={(entry) => entry.product.length > 15 ? `${entry.product.substring(0, 12)}...` : entry.product}
-                                >
-                                    {data.product_sales.map((_, i) => (
-                                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip 
-                                    contentStyle={{
-                                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                        border: '1px solid #E5E7EB',
-                                        borderRadius: '8px',
-                                        padding: '8px 12px'
-                                    }}
-                                    formatter={(value: number) => [formatRupiah(value), 'Revenue']}
-                                />
-                            </PieChart>
-                        </ResponsiveContainer>
+                    <Card className="border-none shadow-sm">
+                        <CardHeader>
+                            <CardTitle>Produk Paling Laris</CardTitle>
+                            <CardDescription>Distribusi penjualan per produk</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-[300px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={data.product_sales}
+                                            dataKey="revenue"
+                                            nameKey="product"
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={60}
+                                            outerRadius={90}
+                                            paddingAngle={2}
+                                            label={(entry) => entry.product.length > 15 ? `${entry.product.substring(0, 12)}...` : entry.product}
+                                        >
+                                            {data.product_sales.map((_, i) => (
+                                                <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip 
+                                            contentStyle={{
+                                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                                border: '1px solid #e5e7eb',
+                                                borderRadius: '8px',
+                                                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                                padding: '8px 12px'
+                                            }}
+                                            formatter={(value: number) => [formatRupiah(value), 'Revenue']}
+                                        />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </CardContent>
                     </Card>
-                </div>
+                </motion.div>
 
                 {/* TABEL KONFIRMASI PESANAN */}
-                <OrdersTable orders={orders} handleConfirm={handleConfirm} itemsPerPage={10} />
-            </div>
-        </>
+                <motion.div variants={itemVariants}>
+                    <Card className="border-none shadow-sm">
+                        <CardHeader>
+                            <CardTitle>Pesanan Terbaru</CardTitle>
+                            <CardDescription>Daftar pesanan yang perlu dikonfirmasi</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <OrdersTable orders={orders} handleConfirm={handleConfirm} itemsPerPage={10} />
+                        </CardContent>
+                    </Card>
+                </motion.div>
+            </motion.div>
+        </div>
     );
 }

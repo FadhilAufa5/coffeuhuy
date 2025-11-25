@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { router } from "@inertiajs/react";
 import toast, { Toaster } from "react-hot-toast";
-import { ShoppingCart, Search } from "lucide-react";
+import { ShoppingCart, Search, Box } from "lucide-react";
 import Cart from "@/components/Cart";
 import NavbarKasir from "@/components/NavbarKasir";
 import { formatRupiah } from "@/lib/utils";
@@ -124,10 +124,10 @@ export default function KasirIndex({ products }: { products: Product[] }) {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  Point of Sale
+                  Point of Sales Kopi Uhuyy
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                  Pilih produk untuk ditambahkan ke pesanan
+                  Pilih produk untuk ditambahkan ke pesanan anda dan selesaikan pembayaran.
                 </p>
               </div>
 
@@ -182,7 +182,8 @@ export default function KasirIndex({ products }: { products: Product[] }) {
           <div className="flex-1 overflow-y-auto p-4 sm:p-6">
             {productsToDisplay.length === 0 ? (
               <div className="flex flex-col justify-center items-center h-full text-gray-400">
-                <div className="text-6xl mb-3">📦</div>
+           
+                <div className="text-6xl mb-3"> <Box className="w-14 h-14"/> </div>
                 <p className="text-lg font-medium">Tidak ada produk ditemukan</p>
                 <p className="text-sm">Coba ubah kategori atau kata kunci pencarian</p>
               </div>
