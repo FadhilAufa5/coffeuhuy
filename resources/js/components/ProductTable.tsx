@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {Search, Box} from "lucide-react"
 
 export interface Product {
   id: number;
@@ -57,8 +58,9 @@ export default function ProductTable({
       {/* Search & Filter */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <input
+          
           type="text"
-          placeholder="Cari produk..."
+          placeholder= "Cari produk..."
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -167,6 +169,7 @@ export default function ProductTable({
                   colSpan={7}
                   className="px-4 py-6 text-center text-gray-500 italic"
                 >
+                  <Box className="w-12 h-12 mx-auto"/>
                   Tidak ada produk ditemukan
                 </td>
               </tr>

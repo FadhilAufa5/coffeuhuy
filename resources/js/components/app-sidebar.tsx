@@ -16,10 +16,11 @@ import { Link } from '@inertiajs/react';
 import {
   LayoutGrid,
   ShoppingCart,
-  Gift,
-  MapPin,
   HandCoins,
-  History
+  History, 
+  ListCheck, 
+  Calendar1, 
+  MapPinned
 
 } from 'lucide-react';
 import AppLogo from './app-logo';
@@ -28,7 +29,7 @@ const dashboardNavItems: NavItem[] = [
   {
     title: 'Dashboard',
     href: dashboard(),
-    icon: LayoutGrid,
+    icon: ListCheck,
   },
 ];
 
@@ -41,12 +42,12 @@ const menuNavItems: NavItem[] = [
   {
     title: 'Events',
     href: '/events',
-    icon: Gift,
+    icon: Calendar1,
   },
   {
     title: 'Outlets',
     href: '/outlets',
-    icon: MapPin,
+    icon: MapPinned,
   },
 
 ];

@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Box, Search  } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductTable, { Product } from "@/components/ProductTable";
@@ -93,7 +93,6 @@ export default function CreateProduct({
           <h1 className="text-3xl font-bold dark:text-white">
             Tambah Produk Baru 
             <p className="text-sm text-gray-500 py-2 px-1">Tambahkan produk baru di Coffee Uhuy untuk memudahkan para sobat Uhuy.</p>
-            
           </h1>
 
          

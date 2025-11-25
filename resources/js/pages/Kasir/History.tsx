@@ -190,16 +190,21 @@ export default function History() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                 {/* Search */}
-                <div className="md:col-span-4 relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Cari invoice / nama..."
-                    value={filters.search}
-                    onChange={(e) => handleFilterChange("search", e.target.value)}
-                    onKeyDown={handleSearchKeyDown}
-                    className="pl-9"
-                  />
+                <div className="md:col-span-4 flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder="Cari invoice / nama..."
+                      value={filters.search}
+                      onChange={(e) => handleFilterChange("search", e.target.value)}
+                      onKeyDown={handleSearchKeyDown}
+                      className="pl-9"
+                    />
+                  </div>
+                  <Button onClick={applyFilters} size="icon" className="shrink-0 bg-primary/90 hover:bg-primary">
+                    <Search className="w-4 h-4" />
+                  </Button>
                 </div>
 
                 {/* Status */}
@@ -256,8 +261,8 @@ export default function History() {
                             className="text-xs"
                         />
                     </div>
-                    <Button onClick={applyFilters} size="icon" className="shrink-0">
-                        <Search className="w-4 h-4" />
+                    <Button onClick={applyFilters} variant="secondary" className="shrink-0">
+                        Filter
                     </Button>
                 </div>
               </div>
